@@ -126,7 +126,7 @@ def test_percentile_helper() -> None:
 
 
 def test_percentile_matches_numpy_inverted_cdf() -> None:
-    """v0.9 (P0-4): ``_percentile`` matches ``numpy.percentile(method='inverted_cdf')``.
+    """``_percentile`` matches ``numpy.percentile(method='inverted_cdf')``.
 
     The runner docstring previously claimed ``method='lower'`` — wrong.
     ``method='lower'`` uses ``floor(q * (n - 1))`` (zero-indexed),
@@ -151,18 +151,18 @@ def test_percentile_matches_numpy_inverted_cdf() -> None:
     short = [float(i) for i in range(10)]
     short_arr = numpy.asarray(short)
     # q=0.5: inverted_cdf rank = ceil(5.0) = 5 ⇒ short[4] = 4.
-    # method='lower':        floor(0.5 * 9) = 4 ⇒ short[4] = 4. (Match.)
+    # method='lower': floor(0.5 * 9) = 4 ⇒ short[4] = 4. (Match.)
     # q=0.75: inverted_cdf rank = ceil(7.5) = 8 ⇒ short[7] = 7.
-    # method='lower':         floor(0.75 * 9) = 6 ⇒ short[6] = 6. (Differ.)
+    # method='lower': floor(0.75 * 9) = 6 ⇒ short[6] = 6. (Differ.)
     assert _percentile(short, 0.75) == 7.0
     assert float(numpy.percentile(short_arr, 75.0, method="inverted_cdf")) == 7.0
     assert float(numpy.percentile(short_arr, 75.0, method="lower")) == 6.0
 
 
 def test_p50_and_p99_use_same_percentile_method() -> None:
-    """v0.8 (P0-5): p50 and p99 must share the nearest-rank definition.
+    """p50 and p99 must share the nearest-rank definition.
 
-    Pre-v0.8 p50 used ``statistics.median`` (linear interpolation), so on
+    An earlier iteration p50 used ``statistics.median`` (linear interpolation), so on
     even-sized samples it returned a value NOT in the input set, while
     p99 returned an actual sample. The contract is: both percentiles
     yield an element from the input set, computed via ``_percentile``.
@@ -511,7 +511,7 @@ def test_run_eval_preserves_input_order() -> None:
 
 
 # ---------------------------------------------------------------------------
-# v0.7 concurrency / fail-fast contract
+# the current implementation concurrency / fail-fast contract
 # ---------------------------------------------------------------------------
 
 

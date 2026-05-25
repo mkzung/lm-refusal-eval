@@ -1,7 +1,7 @@
 """Tests for :mod:`lre.provenance`.
 
 The provenance snapshot embedded in every ``EvalResult`` produced by
-``lre run`` is the cornerstone of the v0.5 reproducibility story. These
+``lre run`` is the cornerstone of the legacy reproducibility story. These
 tests exercise the collector's git probes, the privacy-preserving
 hostname hash, and the optional test seams that make the snapshot
 stable enough to assert in unit tests.
@@ -163,7 +163,7 @@ def test_eval_result_json_roundtrip_with_provenance() -> None:
 
 
 def test_legacy_v04_result_json_loads_without_provenance() -> None:
-    """A v0.4 result file (no ``provenance`` field) must load cleanly."""
+    """A legacy result file (no ``provenance`` field) must load cleanly."""
     legacy = json.dumps(
         [
             {
@@ -192,7 +192,7 @@ def test_legacy_v04_result_json_loads_without_provenance() -> None:
 def test_schema_version_is_1_0_string() -> None:
     """External tooling dispatches on schema_version — pin the value.
 
-    v0.10 bumps the schema to ``"1.0"`` alongside the full CLI-input
+    the current implementation bumps the schema to ``"1.0"`` alongside the full CLI-input
     capture (adapter, fake_refusal_rate, sample_n, judge_kind,
     use_chat_template, api_key_env, base_url, max_concurrent). The
     bump signals that the harness contract is now stable.
@@ -202,7 +202,7 @@ def test_schema_version_is_1_0_string() -> None:
 
 
 def test_provenance_v08_new_fields_default_to_none() -> None:
-    """The v0.8 fields default to ``None`` so legacy ``collect_provenance``
+    """The legacy fields default to ``None`` so legacy ``collect_provenance``
     calls (no ``model_id`` / ``suite_hash`` / etc.) keep working.
     """
     prov = collect_provenance(seed=1)
@@ -214,7 +214,7 @@ def test_provenance_v08_new_fields_default_to_none() -> None:
 
 
 def test_provenance_v08_accepts_explicit_fields() -> None:
-    """When provided, v0.8 fields round-trip into the snapshot."""
+    """When provided, the current implementation fields round-trip into the snapshot."""
     prov = collect_provenance(
         seed=1,
         model_id="Qwen2-0.5B-Instruct@chat",
@@ -231,9 +231,9 @@ def test_provenance_v08_accepts_explicit_fields() -> None:
 
 
 def test_provenance_v07_json_loads_unchanged() -> None:
-    """A v0.7 provenance JSON (no new fields) must still parse.
+    """A legacy provenance JSON (no new fields) must still parse.
 
-    Backward compat: external tooling holding v0.7 result files must
+    Backward compat: external tooling holding the current implementation result files must
     not break when upgrading the harness.
     """
     legacy = {
@@ -298,7 +298,7 @@ def test_aggregate_results_with_provenance_collects_snapshot() -> None:
 
 
 def test_provenance_respects_source_date_epoch(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    """v0.9 (P0-5): SOURCE_DATE_EPOCH pins the provenance timestamp.
+    """SOURCE_DATE_EPOCH pins the provenance timestamp.
 
     The README claim of "byte-identical reruns" only held for ``lre demo``;
     ``lre run`` provenance changed every invocation because of the wall-clock
@@ -329,7 +329,7 @@ def test_provenance_ignores_malformed_source_date_epoch(monkeypatch) -> None:  #
 
 
 def test_provenance_ignores_negative_source_date_epoch(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    """v0.10: a negative SOURCE_DATE_EPOCH falls back to wall-clock; never raises.
+    """the current implementation: a negative SOURCE_DATE_EPOCH falls back to wall-clock; never raises.
 
     Pre-1970 timestamps crash on Windows ``fromtimestamp`` and are never
     what the operator intended. The helper warns and falls through.

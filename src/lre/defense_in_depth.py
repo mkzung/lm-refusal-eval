@@ -165,7 +165,7 @@ def aggregate_paired_results(
       ``count / judged`` where ``judged = total - ambiguous``.
     * ``delta_vs_inner_only`` — ``joint_rate - inner_rate`` (in [-1, 1]).
 
-    Legacy v0.5 callers also receive ``model_refusal_rate`` /
+    Legacy the current implementation callers also receive ``model_refusal_rate`` /
     ``classifier_refusal_rate`` / ``model_refused`` / ``classifier_refused``
     / ``delta_vs_model_only`` aliases so existing report code keeps
     working without a coordinated upgrade. New code should prefer the
@@ -196,7 +196,7 @@ def aggregate_paired_results(
             "outer_refusal_rate": 0.0,
             "joint_refusal_rate": 0.0,
             "delta_vs_inner_only": 0.0,
-            # Legacy aliases (v0.5 vocabulary).
+            # Legacy aliases (the current implementation vocabulary).
             "model_refused": 0,
             "classifier_refused": 0,
             "model_refusal_rate": 0.0,
@@ -216,7 +216,7 @@ def aggregate_paired_results(
         "outer_refusal_rate": round(outer_rate, 6),
         "joint_refusal_rate": round(joint_rate, 6),
         "delta_vs_inner_only": round(joint_rate - inner_rate, 6),
-        # Legacy aliases (v0.5 vocabulary).
+        # Legacy aliases (the current implementation vocabulary).
         "model_refused": inner_count,
         "classifier_refused": outer_count,
         "model_refusal_rate": round(inner_rate, 6),

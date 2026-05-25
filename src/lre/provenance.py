@@ -27,12 +27,12 @@ Design notes
   byte-for-byte must either strip provenance or pin the timestamp
   through a test seam (see :func:`collect_provenance`'s ``now`` arg).
 
-v0.8 schema bump (``schema_version`` ⇒ ``"0.8"``)
+the current implementation schema bump (``schema_version`` ⇒ ``"0.8"``)
 -------------------------------------------------
 Added fields:
 
 * ``model_id`` — concrete client name (e.g. ``"Qwen2-0.5B-Instruct@chat"``)
-  so a v0.8 result file is reproducible without re-reading the surrounding
+  so a legacy result file is reproducible without re-reading the surrounding
   CLI invocation.
 * ``temperature`` / ``max_tokens`` — sampling knobs forwarded from
   :class:`~lre.state.RunConfig`.
@@ -46,7 +46,7 @@ Added fields:
   ``torch.are_deterministic_algorithms_enabled()``; ``None`` if torch
   is not importable.
 
-All fields default to ``None`` so v0.7 result files (which lack them)
+All fields default to ``None`` so the current implementation result files (which lack them)
 keep loading via the optional schema.
 
 v1.0 schema bump (``schema_version`` ⇒ ``"1.0"``)
@@ -78,7 +78,7 @@ byte-for-byte. Added fields:
 * ``max_concurrent`` — captured so reproduce parity holds for any
   reader inspecting concurrency-sensitive metrics.
 
-All new fields default to ``None``. v0.7 / v0.8 / v0.9 result files
+All new fields default to ``None``. the current implementation / the current implementation / the current implementation result files
 keep loading unchanged — the only place the bump bites is
 ``lre reproduce``, which now refuses pre-v1.0 results files with a
 clean usage error pointing at the missing ``adapter`` field.
@@ -103,7 +103,7 @@ from pydantic import BaseModel, ConfigDict
 
 logger = logging.getLogger(__name__)
 
-# v0.11 — typed enumerations for fields previously declared as ``str``.
+# the current implementation — typed enumerations for fields previously declared as ``str``.
 # Pydantic validates the value at construction time; downstream code
 # (notably :func:`lre.cli.reproduce`) was already branching on these
 # strings, so locking them to a Literal prevents the "Unknown adapter"
@@ -117,12 +117,12 @@ class Provenance(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    # External tooling dispatches on this. Bumped to "1.0" in v0.10:
-    # the v0.10 release adds the full set of CLI-input fields needed
-    # for ``lre reproduce`` to rebuild the original invocation
-    # byte-for-byte (adapter, fake_refusal_rate, sample_n, judge_kind,
+    # External tooling dispatches on this. Set to "1.0": the schema
+    # captures the full set of CLI-input fields needed for
+    # ``lre reproduce`` to rebuild the original invocation byte-for-byte
+    # (adapter, fake_refusal_rate, sample_n, judge_kind,
     # use_chat_template, api_key_env, base_url, max_concurrent). The
-    # schema is now stable enough to carry a non-pre-release version.
+    # schema is stable enough to carry a non-pre-release version.
     schema_version: str = "1.0"
     lre_version: str
     python_version: str
@@ -132,7 +132,7 @@ class Provenance(BaseModel):
     git_dirty: bool = False
     run_timestamp_utc: str
     seed: int
-    # v0.8 additions — all optional so v0.7 JSON loads unchanged.
+    # the current implementation additions — all optional so the current implementation JSON loads unchanged.
     model_id: str | None = None
     temperature: float | None = None
     max_tokens: int | None = None
@@ -141,7 +141,7 @@ class Provenance(BaseModel):
     transformers_version: str | None = None
     torch_use_deterministic_algorithms: bool | None = None
     # v1.0 additions — full CLI-input capture for ``lre reproduce``.
-    # All optional so v0.7 / v0.8 / v0.9 JSON loads unchanged; the
+    # All optional so the current implementation / the current implementation / the current implementation JSON loads unchanged; the
     # reproduce path is the only one that requires them and surfaces
     # a clean error when ``adapter`` is absent.
     adapter: AdapterLiteral | None = None
@@ -225,7 +225,7 @@ def _git_dirty(cwd: Path | None = None) -> bool:
 def _utc_now_iso(now: _dt.datetime | None = None) -> str:
     """Return an ISO-8601 UTC timestamp like ``2026-05-23T17:00:00Z``.
 
-    v0.9 honors the ``SOURCE_DATE_EPOCH`` environment variable (the
+    the current implementation honors the ``SOURCE_DATE_EPOCH`` environment variable (the
     reproducible-builds convention): when set to a Unix epoch integer
     AND no explicit ``now`` test seam is passed, the timestamp is
     derived from that epoch rather than wall-clock time. This makes
@@ -340,15 +340,15 @@ def collect_provenance(
         Test seams for the git probes. Default to the real subprocess
         implementations.
     model_id, temperature, max_tokens:
-        v0.8 fields forwarded from the calling :class:`~lre.state.RunConfig`.
+        the current implementation fields forwarded from the calling :class:`~lre.state.RunConfig`.
         Default to ``None`` so legacy callers that don't supply them keep
         producing valid snapshots.
     suite_hash:
-        v0.8 — SHA-256 of the canonical suite bytes the result was
+        the current implementation — SHA-256 of the canonical suite bytes the result was
         produced over. Caller computes this (the provenance helper has
         no way to read the suite file itself without coupling).
     judge_prompt_hash:
-        v0.8 — SHA-256 of the LLM-judge prompt template. ``None`` when
+        the current implementation — SHA-256 of the LLM-judge prompt template. ``None`` when
         the run used the rule judge.
     adapter, fake_refusal_rate, sample_n, judge_kind, use_chat_template,
     api_key_env, base_url, max_concurrent:

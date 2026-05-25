@@ -123,9 +123,9 @@ def test_run_rejects_invalid_max_concurrent(tmp_path: Path) -> None:
 
 
 def test_run_rejects_invalid_temperature(tmp_path: Path) -> None:
-    """``--temperature 10.0`` violates RunConfig (max 5.0 as of v0.10).
+    """``--temperature 10.0`` violates RunConfig (max 5.0 as of the current implementation).
 
-    v0.10 raised the ceiling from 2.0 to 5.0 so local HF checkpoints
+    the current implementation raised the ceiling from 2.0 to 5.0 so local HF checkpoints
     and OpenAI-compatible endpoints (vLLM, Azure, OpenRouter) that
     accept temperatures above the OpenAI public-API limit are usable.
     A nonsense value like 10.0 still fails fast.
@@ -152,7 +152,7 @@ def test_run_rejects_invalid_temperature(tmp_path: Path) -> None:
 
 
 def test_run_accepts_temperature_above_two(tmp_path: Path) -> None:
-    """v0.10: ``--temperature 3.0`` is accepted (was rejected in v0.9)."""
+    """the current implementation: ``--temperature 3.0`` is accepted (was rejected in the current implementation)."""
     runner = CliRunner()
     out = tmp_path / "x.json"
     result = runner.invoke(
@@ -974,7 +974,7 @@ def test_lint_empty_suite_omits_line_no(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# v0.6: edge-case input validation on CLI options
+# the current implementation: edge-case input validation on CLI options
 # ---------------------------------------------------------------------------
 
 
@@ -1192,7 +1192,7 @@ def test_kappa_help_does_not_leak_audit_ids() -> None:
 
 
 # ---------------------------------------------------------------------------
-# v0.6: `lre cache` subcommands
+# the current implementation: `lre cache` subcommands
 # ---------------------------------------------------------------------------
 
 
@@ -1220,7 +1220,7 @@ def test_cache_info_empty_directory(tmp_path: Path) -> None:
 
 
 def test_cache_info_refuses_directory_without_sentinel(tmp_path: Path) -> None:
-    """v0.7 safety: ``lre cache info`` refuses non-cache directories."""
+    """the current implementation safety: ``lre cache info`` refuses non-cache directories."""
     runner = CliRunner()
     cache_dir = tmp_path / "stray"
     cache_dir.mkdir()
@@ -1231,7 +1231,7 @@ def test_cache_info_refuses_directory_without_sentinel(tmp_path: Path) -> None:
 
 
 def test_cache_clear_refuses_directory_without_sentinel(tmp_path: Path) -> None:
-    """v0.7 safety: ``lre cache clear`` refuses non-cache directories."""
+    """the current implementation safety: ``lre cache clear`` refuses non-cache directories."""
     runner = CliRunner()
     cache_dir = tmp_path / "stray"
     cache_dir.mkdir()
@@ -1435,12 +1435,12 @@ def _synthetic_result(model: str, suite: str, refused: int, complied: int) -> Ev
 
 
 # ---------------------------------------------------------------------------
-# v0.9 (R7): symlink check refuses leaf symlinks, warns on parent symlinks
+# symlink check refuses leaf symlinks, warns on parent symlinks
 # ---------------------------------------------------------------------------
 
 
 def test_safe_response_cache_refuses_leaf_symlink(tmp_path: Path) -> None:
-    """v0.7 baseline: a symlinked leaf cache dir is refused."""
+    """the current implementation baseline: a symlinked leaf cache dir is refused."""
     from lre.cli import _safe_response_cache
 
     real = tmp_path / "real"
@@ -1455,9 +1455,9 @@ def test_safe_response_cache_refuses_leaf_symlink(tmp_path: Path) -> None:
 def test_safe_response_cache_warns_on_parent_symlink(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """v0.9: a symlink in a PARENT of the cache path warns but does not refuse.
+    """the current implementation: a symlink in a PARENT of the cache path warns but does not refuse.
 
-    Pre-v0.9 refused any parent symlink, which broke common benign cases:
+    An earlier iteration refused any parent symlink, which broke common benign cases:
     macOS ``/tmp -> /private/tmp`` and any user path containing ``..``.
     The new behavior preserves the leaf-symlink refusal (the actual
     attacker-controlled surface) and downgrades parent symlinks to a
@@ -1500,9 +1500,9 @@ def test_safe_response_cache_allows_parent_symlink_with_opt_in(
 
 
 def test_safe_response_cache_accepts_dotdot_in_path(tmp_path: Path) -> None:
-    """v0.9: paths containing ``..`` segments are accepted (no symlinks involved).
+    """the current implementation: paths containing ``..`` segments are accepted (no symlinks involved).
 
-    Pre-v0.9 compared ``absolute()`` (preserves ``..``) against
+    An earlier iteration compared ``absolute()`` (preserves ``..``) against
     ``resolve()`` (collapses ``..``), so ``foo/../cache`` triggered the
     symlink-refusal codepath even though no symlink existed.
     """
@@ -1521,11 +1521,11 @@ def test_safe_response_cache_accepts_dotdot_in_path(tmp_path: Path) -> None:
 def test_safe_response_cache_accepts_macos_style_tmp(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """v0.9: macOS-style ``/tmp -> /private/tmp`` parent symlinks are accepted.
+    """the current implementation: macOS-style ``/tmp -> /private/tmp`` parent symlinks are accepted.
 
     Simulates the macOS layout where ``/tmp`` is itself a system-level
-    symlink. Pre-v0.9 refused such paths for everyone using ``/tmp``;
-    v0.9 warns instead so the operator can proceed.
+    symlink. An earlier iteration refused such paths for everyone using ``/tmp``;
+    the current implementation warns instead so the operator can proceed.
     """
     from lre.cli import _safe_response_cache
 
@@ -1543,7 +1543,7 @@ def test_safe_response_cache_accepts_macos_style_tmp(
 
 
 # ---------------------------------------------------------------------------
-# v0.9 (P1-8): --out -  routes to stdout instead of creating a file named "-"
+# --out - routes to stdout instead of creating a file named "-"
 # ---------------------------------------------------------------------------
 
 
@@ -1577,7 +1577,7 @@ def test_run_out_dash_writes_to_stdout(tmp_path: Path) -> None:
 
 
 def test_run_invalid_suite_name_renders_usage_error(tmp_path: Path) -> None:
-    """v0.9 (P1-10): a malicious suite name renders a clean Click usage error."""
+    """a malicious suite name renders a clean Click usage error."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -1599,7 +1599,7 @@ def test_run_invalid_suite_name_renders_usage_error(tmp_path: Path) -> None:
 
 
 def test_run_fake_refusal_rate_out_of_range_renders_usage_error(tmp_path: Path) -> None:
-    """v0.9 (P1-9): --fake-refusal-rate outside [0, 1] fails fast with FloatRange."""
+    """--fake-refusal-rate outside [0, 1] fails fast with FloatRange."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -1622,7 +1622,7 @@ def test_run_fake_refusal_rate_out_of_range_renders_usage_error(tmp_path: Path) 
 
 
 # ---------------------------------------------------------------------------
-# v0.9 (P2-1): `lre reproduce` reconstructs the run invocation
+# `lre reproduce` reconstructs the run invocation
 # ---------------------------------------------------------------------------
 
 
@@ -1658,7 +1658,7 @@ def test_reproduce_prints_lre_run_invocation(tmp_path: Path) -> None:
     assert result.exit_code == 0, result.output
     assert "Original lre version" in result.output
     assert "SOURCE_DATE_EPOCH" in result.output
-    # v0.10: the reconstructed command always includes --adapter and
+    # the current implementation: the reconstructed command always includes --adapter and
     # carries the full CLI-input set captured in provenance.
     assert "lre run" in result.output
     assert "--adapter fake" in result.output
@@ -1673,7 +1673,7 @@ def test_reproduce_exec_roundtrip_matches_input(tmp_path: Path) -> None:
     The fake adapter is deterministic in ``(seed, prompts,
     refusal_rate)``, so the reconstructed run produces byte-identical
     EvalResult payloads when the captured ``fake_refusal_rate`` is
-    used (which v0.10 does — pre-v0.10 hardcoded 0.5 and silently
+    used (which the current implementation does — an earlier iteration hardcoded 0.5 and silently
     broke this invariant).
     """
     out_path = _run_for_reproduce(tmp_path, seed=5)
@@ -1701,7 +1701,7 @@ def test_reproduce_exec_roundtrip_matches_input(tmp_path: Path) -> None:
 
 
 def test_reproduce_refuses_results_without_provenance(tmp_path: Path) -> None:
-    """Legacy v0.4 result files (no provenance) cannot be reproduced — clean error."""
+    """Legacy the current implementation result files (no provenance) cannot be reproduced — clean error."""
     # Hand-craft an EvalResult JSON without provenance.
     legacy_blob = [
         {
@@ -1728,7 +1728,7 @@ def test_reproduce_refuses_results_without_provenance(tmp_path: Path) -> None:
 
 
 def test_reproduce_rejects_pre_v1_provenance(tmp_path: Path) -> None:
-    """v0.10: pre-v1.0 results files (no captured adapter) get a clean error.
+    """the current implementation: pre-v1.0 results files (no captured adapter) get a clean error.
 
     Pre-v1.0 provenance lacks ``adapter`` / ``fake_refusal_rate`` /
     ``sample_n`` / ``judge_kind`` etc. so the reproduce path cannot
@@ -1761,7 +1761,7 @@ def test_reproduce_rejects_pre_v1_provenance(tmp_path: Path) -> None:
                 "temperature": 0.0,
                 "max_tokens": 512,
                 # NB: no adapter / fake_refusal_rate / sample_n /
-                # judge_kind / etc. — this is what a v0.9 file looks like.
+                # judge_kind / etc. — this is what a legacy file looks like.
             },
         }
     ]
@@ -1770,14 +1770,14 @@ def test_reproduce_rejects_pre_v1_provenance(tmp_path: Path) -> None:
     runner = CliRunner()
     result = runner.invoke(main, ["reproduce", str(legacy_path)])
     assert result.exit_code != 0
-    # Error must mention both 'adapter' and 'v0.10' so the operator
+    # Error must mention both 'adapter' and 'the current implementation' so the operator
     # knows what to fix.
     assert "adapter" in result.output.lower()
-    assert "v0.10" in result.output
+    assert "current release" in result.output
 
 
 def test_reproduce_print_includes_all_captured_flags(tmp_path: Path) -> None:
-    """v0.10: reproduce reconstructs the full CLI invocation, not just a 4-tuple.
+    """the current implementation: reproduce reconstructs the full CLI invocation, not just a 4-tuple.
 
     Run with ``--fake-refusal-rate 0.7 --sample 3 --judge rule`` and
     confirm every captured flag shows up in the reconstructed command.
@@ -1822,12 +1822,12 @@ def test_reproduce_print_includes_all_captured_flags(tmp_path: Path) -> None:
 
 
 def test_reproduce_exec_byte_identical_with_source_date_epoch(tmp_path: Path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    """v0.10: with SOURCE_DATE_EPOCH pinned, --exec is byte-identical to source.
+    """the current implementation: with SOURCE_DATE_EPOCH pinned, --exec is byte-identical to source.
 
     Includes ``--fake-refusal-rate 0.7`` and ``--sample 3`` so the test
-    actually exercises the v0.10 honest-reproduce path. Pre-v0.10 the
+    actually exercises the legacy honest-reproduce path. An earlier iteration the
     reproduce-exec hardcoded refusal_rate=0.5 and stripped --sample, so
-    this test would have failed against v0.9.
+    this test would have failed against the current implementation.
     """
     import hashlib
 
@@ -1874,11 +1874,11 @@ def test_reproduce_exec_byte_identical_with_source_date_epoch(tmp_path: Path, mo
 
 
 def test_reproduce_groups_by_judge_kind(tmp_path: Path) -> None:
-    """v0.10 (P2-4): runs differing only in judge collapse into separate commands.
+    """runs differing only in judge collapse into separate commands.
 
-    Pre-v0.10 grouped by 4-tuple ignoring judge type, so a rule-judge
+    An earlier iteration grouped by 4-tuple ignoring judge type, so a rule-judge
     and llm-judge run with otherwise-identical knobs were silently
-    collapsed into a single reconstructed command. v0.10 includes
+    collapsed into a single reconstructed command. the current implementation includes
     ``judge_kind`` in the group key so they stay distinct.
     """
     runner = CliRunner()

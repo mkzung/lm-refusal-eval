@@ -2,14 +2,14 @@
 
 Subcommands cover the eval lifecycle:
 
-* ``lre demo``    — offline end-to-end run using the synthetic client.
-* ``lre run``     — run a real model adapter against one or more suites.
-* ``lre judge``   — rejudge a previously generated set of raw responses.
-* ``lre report``  — render Markdown / JSON / scaling-table from cached results.
+* ``lre demo`` — offline end-to-end run using the synthetic client.
+* ``lre run`` — run a real model adapter against one or more suites.
+* ``lre judge`` — rejudge a previously generated set of raw responses.
+* ``lre report`` — render Markdown / JSON / scaling-table from cached results.
 * ``lre compare`` — diff two result files, with proportion test + Wilson CI on Δ.
-* ``lre lint``    — validate a suite JSONL file (categories, dup ids, etc.).
-* ``lre kappa``   — Cohen's κ inter-judge agreement on two label files.
-* ``lre did``     — paired (inner, outer) defense-in-depth refusal stats.
+* ``lre lint`` — validate a suite JSONL file (categories, dup ids, etc.).
+* ``lre kappa`` — Cohen's κ inter-judge agreement on two label files.
+* ``lre did`` — paired (inner, outer) defense-in-depth refusal stats.
 
 Subcommands return ``0`` on success and ``1`` on user-input error
 (missing files, bad suite names, missing API keys, schema errors).
@@ -173,7 +173,7 @@ def _is_stdout_sentinel(path: Path | str | None) -> bool:
     """Return ``True`` when ``path`` is the Unix-style ``-`` stdout sentinel.
 
     Following the standard CLI convention: ``--out -`` writes to stdout
-    instead of a literal file named ``-``. Pre-v0.9 the harness created
+    instead of a literal file named ``-``. An earlier iteration the harness created
     a file named ``-`` in the cwd, which was almost never what the
     operator intended.
     """
@@ -205,7 +205,7 @@ def _safe_response_cache(cache_dir: Path, *, allow_symlinked: bool = False) -> R
     symlink at the cache leaf would silently redirect cache writes
     elsewhere on disk. Pass ``allow_symlinked=True`` to opt in.
 
-    v0.9 (R7): parent-path symlinks now WARN instead of REFUSE. v0.8
+     parent-path symlinks now WARN instead of REFUSE. the current implementation
     compared ``absolute()`` against ``resolve()``, which fired in two
     common benign cases: (1) any path containing ``..`` segments
     (``absolute()`` preserves them, ``resolve()`` collapses them) and
@@ -412,10 +412,10 @@ async def _demo_async(
             prompts = list(full_prompts)
         labels = await ajudge_responses(responses)
         suite_label = suite
-        # v0.12: preserve the ``[sampled N/M, seed=K]`` suffix even when
+        # the current implementation: preserve the ``[sampled N/M, seed=K]`` suffix even when
         # ``--sample`` overshoots the suite size, adding a ``capped``
         # marker so downstream consumers can tell a sample-was-requested-
-        # but-capped run apart from a true full-suite run. Pre-v0.12
+        # but-capped run apart from a true full-suite run. An earlier iteration
         # dropped the suffix entirely on overshoot — exactly the case
         # where the user most needs to know their sample request was
         # truncated.
@@ -758,7 +758,7 @@ def run(
         click.echo(str(exc), err=True)
         sys.exit(1)
     except InvalidSuiteName as exc:
-        # v0.9 (P1-10): a sandboxed suite-name reject (e.g. ``../../etc/passwd``)
+        # a sandboxed suite-name reject (e.g. ``../../etc/passwd``)
         # should render as a clean usage error, not a raw traceback.
         raise click.UsageError(str(exc)) from exc
     except click.UsageError as exc:
@@ -842,10 +842,10 @@ async def _run_async(
     """
     # ``judge`` came from click.Choice(['rule', 'llm']); narrowing here is safe.
     judge_lit: Literal["rule", "llm"] = judge  # type: ignore[assignment]
-    # v0.8 provenance: bake the run config + judge template fingerprint
+    # the current implementation provenance: bake the run config + judge template fingerprint
     # into the snapshot. ``suite_hash`` is populated per-suite below
     # (different suites within one run get different snapshots).
-    # v0.9: read the prompt-template hash from the actual judge instance
+    # the current implementation: read the prompt-template hash from the actual judge instance
     # (subclasses or custom-prompt instances override the default), so a
     # custom judge's hash is correctly reflected in provenance.
     if judge_lit == "llm":
@@ -923,9 +923,9 @@ async def _run_async(
             labels = await ajudge_responses(responses, kind=judge_lit, llm_judge=llm_judge)
             # Tag the suite name on the result with the sample marker so
             # downstream comparisons (``lre compare``) cannot conflate
-            # a sample with a full run. v0.12: the suffix is also kept
+            # a sample with a full run. the current implementation: the suffix is also kept
             # when ``--sample`` overshoots the suite size (with a
-            # ``capped`` marker) — pre-v0.12 dropped it silently
+            # ``capped`` marker) — an earlier iteration dropped it silently
             # exactly when the operator most needs to know.
             suite_label = suite
             if sample_n is not None and sample_n > 0:
@@ -1461,7 +1461,7 @@ def reproduce(results_path: Path, out_path: Path | None, do_exec: bool) -> None:
 
     v1.0 schema is required. Pre-v1.0 results files lack the
     ``adapter`` field and the reproduce command refuses to guess —
-    re-run with v0.10+ to capture the full provenance.
+    re-run with the current implementation to capture the full provenance.
     """
     try:
         results = from_json(results_path.read_text(encoding="utf-8"))
@@ -1477,10 +1477,10 @@ def reproduce(results_path: Path, out_path: Path | None, do_exec: bool) -> None:
     def _bare_suite(suite_label: str) -> str:
         return suite_label.split("[", 1)[0]
 
-    # Group rows by every CLI input that drives the eval. Pre-v0.10
+    # Group rows by every CLI input that drives the eval. An earlier iteration
     # grouped by 4-tuple (seed, model_id, temperature, max_tokens) which
     # silently collapsed runs that differed only in judge / adapter /
-    # sample_n. v0.10 includes the full set so two runs only collapse
+    # sample_n. the current implementation includes the full set so two runs only collapse
     # when they were genuinely launched with the same flags.
     GroupKey = tuple[
         int,  # seed
@@ -1502,16 +1502,16 @@ def reproduce(results_path: Path, out_path: Path | None, do_exec: bool) -> None:
         if prov is None:
             raise click.UsageError(
                 f"row for model={row.model!r} suite={row.suite!r} has no provenance; "
-                "cannot reproduce (re-run with v0.5+ to capture provenance)."
+                "cannot reproduce (re-run with the current release to capture provenance)."
             )
-        # v0.10 requires ``adapter`` to rebuild the right client. Pre-v1.0
+        # the current implementation requires ``adapter`` to rebuild the right client. Pre-v1.0
         # results files (schema 0.7/0.8/0.9) have ``adapter=None``.
         if prov.adapter is None:
             raise click.UsageError(
                 f"row for model={row.model!r} suite={row.suite!r} has provenance "
                 f"schema_version={prov.schema_version!r}, which lacks the "
-                "'adapter' field required by `lre reproduce` (v1.0+). "
-                "Re-run with v0.10+ to capture full provenance, or copy the "
+                "'adapter' field required by `lre reproduce` (schema 1.0). "
+                "Re-run with the current release to capture full provenance, or copy the "
                 "original CLI invocation manually."
             )
         key: GroupKey = (
@@ -1630,7 +1630,7 @@ def reproduce(results_path: Path, out_path: Path | None, do_exec: bool) -> None:
         # deterministic"; real adapters re-issue real work and require
         # the operator to have set the relevant env vars.
         #
-        # v0.11: For the HF adapter, ``Provenance.model_id`` is set to
+        # the current implementation: For the HF adapter, ``Provenance.model_id`` is set to
         # ``client.name`` which carries a ``@chat`` suffix when
         # ``use_chat_template=True``. The raw HF Hub repo id (the
         # value passed to ``HFLocalClient(model_id=...)``) is the part
@@ -2032,11 +2032,11 @@ def cache_info(cache_dir: Path) -> None:
         return
     if not is_lre_cache_dir(cache_dir):
         # Surface a softer message when the directory exists but lacks
-        # the sentinel — it might be a pre-v0.7 cache the user should
+        # the sentinel — it might be a an earlier iteration cache the user should
         # migrate, not a stray directory. Point at ``cache migrate``.
         msg = (
             f"Refusing to inspect {cache_dir}: missing or invalid "
-            f"{SENTINEL_FILENAME!r} sentinel. If this is a pre-v0.7 "
+            f"{SENTINEL_FILENAME!r} sentinel. If this is a legacy "
             f"cache directory, run `lre cache migrate --dir {cache_dir}` "
             "to upgrade it; otherwise point --dir at a directory "
             "created by `lre run --cache`."
@@ -2125,7 +2125,7 @@ def cache_clear(cache_dir: Path, older_than: str | None, dry_run: bool) -> None:
     click.echo(f"Cache: removed {removed} of {len(files)} entries from {cache_dir}.")
 
 
-@cache.command("migrate", help="Upgrade a pre-v0.7 cache directory to the v0.7+ layout.")
+@cache.command("migrate", help="Upgrade a legacy cache directory to the current layout.")
 @click.option(
     "--dir",
     "cache_dir",
@@ -2145,14 +2145,14 @@ def cache_clear(cache_dir: Path, older_than: str | None, dry_run: bool) -> None:
     ),
 )
 def cache_migrate(cache_dir: Path, purge_stale: bool) -> None:
-    """Write the ``.lre-cache`` sentinel on a pre-v0.7 cache directory.
+    """Write the ``.lre-cache`` sentinel on a an earlier iteration cache directory.
 
     Idempotent: running ``cache migrate`` against an already-migrated
     cache is a no-op (the sentinel is left in place and the file count
     is reported). When ``--purge-stale`` is supplied, every ``*.json``
     entry under the directory is parsed as a :class:`RawResponse`; rows
     that fail validation are deleted so the cache cannot serve a stale
-    schema to a v0.8+ harness.
+    schema to a newer harness.
     """
     from lre.state import RawResponse
 

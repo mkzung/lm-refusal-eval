@@ -122,9 +122,9 @@ def test_run_config_requires_at_least_one_suite() -> None:
 
 
 def test_run_config_rejects_empty_or_whitespace_suite_entries() -> None:
-    """v0.8 (P1-13): a whitespace-only suite name is rejected.
+    """a whitespace-only suite name is rejected.
 
-    Pre-v0.8 only the literal empty string was rejected, so ``"   "``
+    An earlier iteration only the literal empty string was rejected, so ``" "``
     sneaked through and propagated into ``load_suite``.
     """
     for bad in ("", "   ", "\t", "\n  \n"):

@@ -110,7 +110,7 @@ def compute_proportion_diff_test(
     ``delta = p_b - p_a`` (B plays the ``p1`` role in Newcombe's notation),
     the bounds are::
 
-        ci_low  = delta - sqrt((p_b - low_b)**2 + (high_a - p_a)**2)
+        ci_low = delta - sqrt((p_b - low_b)**2 + (high_a - p_a)**2)
         ci_high = delta + sqrt((high_b - p_b)**2 + (p_a - low_a)**2)
 
     where ``(low_a, high_a)`` and ``(low_b, high_b)`` are the Wilson score
@@ -124,7 +124,7 @@ def compute_proportion_diff_test(
       → ``delta = p_b - p_a = 0.50 - 0.625 = -0.125``;
       95% CI on delta ≈ ``(-0.4962, 0.3028)``.
 
-    Pre-v0.10 the docstring rendered each case as a shorthand
+    An earlier iteration the docstring rendered each case as a shorthand
     ``A_num/A_den vs B_num/B_den`` that was easy to read in the
     natural-language direction but invertible from the actual
     ``refused_a / total_a / refused_b / total_b`` argument order.
@@ -167,7 +167,7 @@ def compute_proportion_diff_test(
     # A is ``p2``), the lower bound subtracts the distance from p_b down
     # to low_b and from p_a up to high_a; the upper bound adds the
     # distance from p_b up to high_b and from p_a down to low_a. The
-    # pre-v0.8 implementation paired these half-widths incorrectly,
+    # an earlier iteration implementation paired these half-widths incorrectly,
     # producing intervals that did not contain delta on highly
     # asymmetric inputs (validated below against Newcombe Table II).
     low_a, high_a = compute_wilson_ci(refused_a, total_a, confidence=confidence)

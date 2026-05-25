@@ -78,9 +78,9 @@ class AnthropicClient:
         self._retry_base_delay = retry_base_delay
         self._http: httpx.AsyncClient | None = None
         self._http_lock = asyncio.Lock()
-        # v0.8 (P1-6): decorrelated-exponential-backoff jitter must be
+        # decorrelated-exponential-backoff jitter must be
         # seeded so two ``generate()`` calls with the same seed produce
-        # the same jitter sequence. Pre-v0.8 the calls used
+        # the same jitter sequence. An earlier iteration the calls used
         # ``random.uniform`` against the module-level shared RNG, which
         # silently broke the byte-identity claim for runs that ever hit
         # the retry path.

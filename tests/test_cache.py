@@ -1,6 +1,6 @@
 """Tests for :mod:`lre.cache`.
 
-The cache is the lowest-friction feature shipped in v0.5: a user with
+The cache is the lowest-friction feature shipped in the current implementation: a user with
 a ``--cache .lre-cache/`` flag spends API quota once and replays the
 same generation locally on every subsequent run. These tests pin the
 key derivation, the on-disk layout, and the runner's wiring.
@@ -107,7 +107,7 @@ def test_cache_key_extra_parts_distinguish_keys() -> None:
     )
     assert base != widened
     # Default empty tuple matches the legacy key format byte-for-byte,
-    # so v0.5 cache directories remain readable.
+    # so the current implementation cache directories remain readable.
     legacy = _cache_key(
         model="m",
         prompt="hi",
@@ -363,14 +363,14 @@ def test_module_imports() -> None:
 
 
 # ---------------------------------------------------------------------------
-# v0.7 contract: canonical-JSON key + sentinel + collision safety
+# the current implementation contract: canonical-JSON key + sentinel + collision safety
 # ---------------------------------------------------------------------------
 
 
 def test_cache_key_resists_delimiter_collision() -> None:
-    """v0.7: pathological ``|``-laden inputs must not collide.
+    """the current implementation: pathological ``|``-laden inputs must not collide.
 
-    Under the pre-v0.7 pipe-joined key, ``model='a|b' + prompt='c'`` and
+    Under the an earlier iteration pipe-joined key, ``model='a|b' + prompt='c'`` and
     ``model='a' + prompt='b|c'`` hashed to the same bytes. The
     canonical-JSON key keeps them distinct.
     """
@@ -380,7 +380,7 @@ def test_cache_key_resists_delimiter_collision() -> None:
 
 
 def test_cache_sentinel_is_written_on_construction(tmp_path: Path) -> None:
-    """v0.7: ``ResponseCache`` drops a ``.lre-cache`` sentinel."""
+    """the current implementation: ``ResponseCache`` drops a ``.lre-cache`` sentinel."""
     from lre.cache import SENTINEL_FILENAME, is_lre_cache_dir
 
     cache_dir = tmp_path / "with-sentinel"
@@ -400,9 +400,9 @@ def test_cache_sentinel_is_absent_on_arbitrary_directory(tmp_path: Path) -> None
 
 
 def test_cache_sentinel_rejects_invalid_content(tmp_path: Path) -> None:
-    """v0.8 (P1-12): a bare-touched ``.lre-cache`` file no longer passes.
+    """a bare-touched ``.lre-cache`` file no longer passes.
 
-    Pre-v0.8 ``is_lre_cache_dir`` only checked existence. An attacker
+    An earlier iteration ``is_lre_cache_dir`` only checked existence. An attacker
     (or an accidental ``touch .lre-cache``) could pass the check
     without a real sentinel.
     """
@@ -426,8 +426,8 @@ def test_cache_sentinel_rejects_invalid_content(tmp_path: Path) -> None:
 
 
 def test_cli_cache_migrate_writes_sentinel(tmp_path: Path) -> None:
-    """v0.8 (P1-14): ``lre cache migrate`` writes the sentinel on a
-    pre-v0.7 cache directory that has cached entries but no marker.
+    """``lre cache migrate`` writes the sentinel on a
+    an earlier iteration cache directory that has cached entries but no marker.
     """
     from click.testing import CliRunner
 

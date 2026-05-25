@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use this software in academic work, please cite it as below."
 title: "lm-refusal-eval: a reproducible refusal-rate evaluation harness for open-weight LLMs"
-version: 0.8.0
-date-released: 2026-05-24
+version: 0.1.0
+date-released: 2026-05-25
 authors:
   - family-names: "Gorbuk"
     given-names: "Max"

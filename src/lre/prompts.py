@@ -162,7 +162,7 @@ def suite_bytes_hash(suite: str) -> str | None:
     """Return SHA-256 of the on-disk suite JSONL bytes, or ``None`` if missing.
 
     Used by :func:`lre.provenance.collect_provenance` (via the CLI) to
-    embed a suite fingerprint in the v0.8 provenance footer so an
+    embed a suite fingerprint in the legacy provenance footer so an
     external consumer can detect a silent suite edit between runs
     without re-reading the suite. Best-effort: file-not-found or
     read failures return ``None`` instead of raising — the run

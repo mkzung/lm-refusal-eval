@@ -86,7 +86,7 @@ def test_resolve_judge_runtime_rejects_unknown_kind() -> None:
 def test_resolve_judge_accepts_documented_kinds(
     fake_judge_factory: Any,
 ) -> None:
-    """All documented ``kind`` values are accepted (v0.8: includes 'manual')."""
+    """All documented ``kind`` values are accepted (the current implementation: includes 'manual')."""
     for kind in ("rule", "llm", "manual", "custom"):
 
         class _J:

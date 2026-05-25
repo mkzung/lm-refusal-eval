@@ -89,7 +89,7 @@ def test_newcombe_table_ii_case_7() -> None:
     * ``(48/80, 56/70)`` ⇒ delta = +0.20, CI = (+0.0524, +0.3339).
     * ``(56/70, 48/80)`` ⇒ delta = -0.20, CI = (-0.3339, -0.0524).
 
-    Both bounds and the SIGN PAIRING are pinned because the pre-v0.8
+    Both bounds and the SIGN PAIRING are pinned because the an earlier iteration
     half-width swap silently flipped which Wilson endpoint anchored
     which side — passing this test verifies the corrected pairing.
     """
@@ -115,7 +115,7 @@ def test_newcombe_small_sample_asymmetric() -> None:
     0.7849)) are approximately ``(-0.4962, 0.3028)``.
 
     Small-sample, asymmetric Wilson intervals are exactly where the
-    pre-v0.8 half-width swap produced visibly wrong intervals — this
+    an earlier iteration half-width swap produced visibly wrong intervals — this
     case is a demanding probe of the corrected pairing.
     """
     neg = compute_proportion_diff_test(5, 8, 4, 8, confidence=0.95)
@@ -130,14 +130,14 @@ def test_newcombe_small_sample_asymmetric() -> None:
 
 
 def test_newcombe_method_10_swap_regression() -> None:
-    """The pre-v0.8 implementation swapped which half-width anchors which
+    """The an earlier iteration implementation swapped which half-width anchors which
     side. Validate the corrected pairing on a strongly asymmetric pair
     (90/100 vs 30/100, delta = -0.6) where the swap is large enough to
     fail with a non-trivial margin.
 
     Under the canonical Method 10:
 
-    * ci_low  = delta - sqrt((p_b - low_b)^2 + (high_a - p_a)^2)
+    * ci_low = delta - sqrt((p_b - low_b)^2 + (high_a - p_a)^2)
     * ci_high = delta + sqrt((high_b - p_b)^2 + (p_a - low_a)^2)
 
     The buggy formulation paired (p_a - low_a)^2 with (high_b - p_b)^2
@@ -148,7 +148,7 @@ def test_newcombe_method_10_swap_regression() -> None:
     assert math.isclose(r["delta"], -0.60, abs_tol=1e-9)
     # Canonical Method 10 (cross-checked against R):
     # Wilson 90/100 ≈ (0.8261, 0.9462); Wilson 30/100 ≈ (0.2179, 0.3974).
-    # ci_low  = -0.60 - sqrt((0.30 - 0.2179)^2 + (0.9462 - 0.90)^2) ≈ -0.694
+    # ci_low = -0.60 - sqrt((0.30 - 0.2179)^2 + (0.9462 - 0.90)^2) ≈ -0.694
     # ci_high = -0.60 + sqrt((0.3974 - 0.30)^2 + (0.90 - 0.8261)^2) ≈ -0.479
     assert math.isclose(r["ci_low"], -0.694, abs_tol=2e-3)
     assert math.isclose(r["ci_high"], -0.479, abs_tol=2e-3)
@@ -255,7 +255,7 @@ def test_cohen_kappa_rejects_invalid_inputs() -> None:
 def test_cohen_kappa_handles_degenerate_constant_raters() -> None:
     """When both raters always say True (or always False), p_e == 1.
 
-    v0.9 (P1-7): the prior ``return -1.0`` branch was unreachable.
+     the prior ``return -1.0`` branch was unreachable.
     ``p_e == 1`` algebraically forces ``p_o == 1`` because both rater
     marginals must be identical-constant. The function returns 1.0.
     """

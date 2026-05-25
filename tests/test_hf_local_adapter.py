@@ -116,7 +116,7 @@ def test_hf_client_explicit_name_overrides_chat_suffix() -> None:
 
 
 # ---------------------------------------------------------------------------
-# v0.5: chat-template support
+# the current implementation: chat-template support
 # ---------------------------------------------------------------------------
 
 
@@ -377,7 +377,7 @@ def test_hf_local_default_use_chat_template_is_true() -> None:
 def test_hf_local_generation_lock_serialises_concurrent_calls(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """v0.7/v0.8 (P1-20): the per-instance ``asyncio.Lock`` serialises
+    """the current implementation/ the per-instance ``asyncio.Lock`` serialises
     concurrent ``generate()`` calls.
 
     Without the lock, four concurrent ``generate`` tasks would all sit

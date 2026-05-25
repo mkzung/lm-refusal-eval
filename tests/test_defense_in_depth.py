@@ -1,6 +1,6 @@
 """Tests for :mod:`lre.defense_in_depth`.
 
-The paired-defense metric is the v0.5 feature most directly aimed at
+The paired-defense metric is the legacy feature most directly aimed at
 the FAR.AI "Defense in Depth" line of work: it quantifies how an
 outer classifier changes the effective refusal rate when stacked on
 top of the model's own refusal signal.
@@ -461,11 +461,11 @@ def test_cli_did_help_mentions_far_ai_research() -> None:
 
 
 def test_paired_label_responses_fans_out_concurrently() -> None:
-    """v0.7/v0.8 (P1-20): pinned timing on paired-defense fan-out.
+    """the current implementation/ pinned timing on paired-defense fan-out.
 
     Eight responses, each judge call sleeps 100ms — with
     ``max_concurrent=4`` the total wall time must be well under 400ms.
-    The pre-v0.7 serial implementation took ~1.6s (8 * 2 judges * 100ms).
+    The an earlier iteration serial implementation took ~1.6s (8 * 2 judges * 100ms).
     Generous tolerance to absorb CI noise.
     """
     import time as _time

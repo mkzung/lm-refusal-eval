@@ -269,7 +269,7 @@ def test_openai_client_works_as_context_manager() -> None:
 
 
 # ---------------------------------------------------------------------------
-# v0.8 (P1-6, P1-20): jitter is seeded; httpx client respects configured
+# the current implementation (P1-6, P1-20): jitter is seeded; httpx client respects configured
 # Limits + Timeout
 # ---------------------------------------------------------------------------
 
@@ -284,7 +284,7 @@ def test_openai_jitter_is_seeded_for_byte_identical_retries() -> None:
 
 
 def test_openai_httpx_client_uses_configured_limits_and_timeout() -> None:
-    """v0.8 (P1-20): the constructed ``httpx.AsyncClient`` is built with
+    """the constructed ``httpx.AsyncClient`` is built with
     the configured connection-pool limits and granular timeouts.
 
     Captures the kwargs the adapter passes into ``httpx.AsyncClient(...)``

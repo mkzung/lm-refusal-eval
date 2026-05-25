@@ -280,7 +280,7 @@ def test_anthropic_client_works_as_context_manager() -> None:
 
 
 # ---------------------------------------------------------------------------
-# v0.8 (P1-6, P1-20): jitter is seeded; httpx client respects configured
+# the current implementation (P1-6, P1-20): jitter is seeded; httpx client respects configured
 # Limits + Timeout
 # ---------------------------------------------------------------------------
 
@@ -289,7 +289,7 @@ def test_anthropic_jitter_is_seeded_for_byte_identical_retries() -> None:
     """Two clients with the same ``jitter_seed`` produce the same
     decorrelated-backoff sequence.
 
-    Pre-v0.8 ``random.uniform`` used the module-level RNG, so retries
+    An earlier iteration ``random.uniform`` used the module-level RNG, so retries
     were non-reproducible — silently breaking the byte-identity claim
     for any run that ever hit a 429.
     """
@@ -305,7 +305,7 @@ def test_anthropic_jitter_is_seeded_for_byte_identical_retries() -> None:
 
 
 def test_anthropic_httpx_client_uses_configured_limits_and_timeout() -> None:
-    """v0.8 (P1-20): the constructed ``httpx.AsyncClient`` is built with
+    """the constructed ``httpx.AsyncClient`` is built with
     the configured connection-pool limits and granular timeouts.
 
     Captures the kwargs the adapter passes into ``httpx.AsyncClient(...)``

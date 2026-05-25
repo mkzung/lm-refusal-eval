@@ -10,7 +10,7 @@ Design
   "temperature", "max_tokens", "extras"}))`` — the canonical JSON is
   built with ``json.dumps(..., sort_keys=True, ensure_ascii=False)`` so
   no separator character (``|``, ``\\n``, etc.) can be smuggled inside
-  a field to silently collide two distinct inputs. The previous v0.6
+  a field to silently collide two distinct inputs. The previous the current implementation
   format ``f"{model}|{prompt}|..."`` was ambiguous: ``model='a|b' +
   prompt='c'`` and ``model='a' + prompt='b|c'`` produced the same key.
   Canonical JSON closes that hole. ``extras`` is a tuple of arbitrary
@@ -88,9 +88,9 @@ def _cache_key(
     escaping, and ``allow_nan=False``. ``temperature`` is rounded to
     six decimals so two callers that pass ``0.0`` and ``0.000001`` do
     not silently share a cache entry. The list-valued ``extras`` field
-    is omitted when empty so the v0.6 empty-tuple default still
-    produces a stable key (its hash differs from the v0.6 pipe-joined
-    digest — caches written by v0.6 will be re-populated on the next
+    is omitted when empty so the legacy empty-tuple default still
+    produces a stable key (its hash differs from the legacy pipe-joined
+    digest — caches written by the current implementation will be re-populated on the next
     run, which is the intended migration).
     """
     payload: dict[str, object] = {
@@ -119,7 +119,7 @@ def is_lre_cache_dir(cache_dir: Path) -> bool:
     :class:`ResponseCache` before running ``cache clear`` / ``cache
     info`` on it — protects against ``--dir ~/Documents`` accidents.
 
-    v0.8 (P1-12): the sentinel content is also validated. Pre-v0.8
+     the sentinel content is also validated. An earlier iteration
     only the file's presence was checked, so any 0-byte ``.lre-cache``
     file would pass — including a touched-by-hand sentinel created
     BEFORE the cache wrote any real data. Now the sentinel must parse
@@ -156,7 +156,7 @@ class ResponseCache:
     >>> cache = ResponseCache(Path("/tmp/lre-cache"))
     >>> cached = cache.get("fake-1b", "hello", 42, 0.0, 256)
     >>> if cached is None:
-    ...     ...  # call the real model
+    ... ... # call the real model
     """
 
     def __init__(self, cache_dir: Path) -> None:

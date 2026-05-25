@@ -72,7 +72,7 @@ class OpenAIClient:
         self._retry_base_delay = retry_base_delay
         self._http: httpx.AsyncClient | None = None
         self._http_lock = asyncio.Lock()
-        # v0.8 (P1-6): seeded jitter RNG — see AnthropicClient for the
+        # seeded jitter RNG — see AnthropicClient for the
         # full rationale on byte-identical retries.
         self._jitter_rng = random.Random(jitter_seed)
 

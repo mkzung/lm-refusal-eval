@@ -7,7 +7,7 @@
 
 ## Reproducing this report
 
-The snippet below demonstrates the v0.2+ surface end-to-end:
+The snippet below demonstrates the current API surface end-to-end:
 
 * `aggregate_results(prompts=...)` populates the per-category breakdown
   (harmful / helpful / borderline) so over-refusal and under-refusal are
