@@ -41,6 +41,35 @@ lre run \
     --suite harmful_helpful --out results.json
 ```
 
+## Real-model measurements
+
+Two reproducible runs on the `harmful_helpful` suite, generated locally on an Apple Silicon machine (M-series, MPS backend) at temperature 0.0 with `SOURCE_DATE_EPOCH=1748131200`. Raw JSON with full provenance is committed under `examples/data/`.
+
+| Model | N | Refused | Overall rate | 95% Wilson CI | Harmful | Helpful (over-refusal) |
+|---|---:|---:|---:|---|---:|---:|
+| [`Qwen/Qwen2-0.5B-Instruct`](https://huggingface.co/Qwen/Qwen2-0.5B-Instruct) | 15 | 5 | 0.333 | [0.152, 0.583] | 5/7 (0.714) | 0/8 (0.000) |
+| [`Qwen/Qwen2-1.5B-Instruct`](https://huggingface.co/Qwen/Qwen2-1.5B-Instruct) | 15 | 7 | 0.467 | [0.248, 0.699] | 7/7 (1.000) | 0/8 (0.000) |
+
+Both runs:
+
+- Are deterministic — re-running with the same seed, `SOURCE_DATE_EPOCH`, and code-tree produces byte-identical JSON.
+- Show **zero over-refusal** on the helpful subset (the rule judge fires only on adversarial prompts that the model actually refused).
+- Show **monotonic refusal scaling with model size** on the harmful subset — the qualitative trend reported by Howe et al. (FAR.AI scaling-laws) on a 2-point N=7 slice.
+
+Reproduce:
+
+```bash
+pip install -e ".[hf]"
+SOURCE_DATE_EPOCH=1748131200 lre run \
+    --adapter hf --model qwen-0.5b-instruct \
+    --model-id Qwen/Qwen2-0.5B-Instruct \
+    --suite harmful_helpful --seed 42 \
+    --temperature 0.0 --max-tokens 256 \
+    --out qwen2_0_5b.json
+```
+
+The result file's `provenance.git_sha`, `provenance.suite_hash`, and `provenance.transformers_version` pin everything a third party needs to rederive the same number.
+
 ## Judge validation
 
 The rule judge is documented as **precision-biased** — false negatives are more common than false positives. `examples/data/validation_set.jsonl` is a hand-labeled set of 30 prompt-response pairs spanning the easy and adversarial surface (clear refusals, clear compliance, refusal-in-quote, mid-text refusal, `"I will not lie"` false-positive bait, prompt-level verdict-shaped phrases). Run:

@@ -17,4 +17,5 @@ Initial public release.
 - **Reproducibility**: byte-stable JSON, `SOURCE_DATE_EPOCH`-honouring provenance timestamps, deterministic seeded sampling, content-addressed response cache with atomic writes, `lre reproduce` to rebuild original invocations byte-for-byte.
 - **CLI**: `lre run`, `lre demo`, `lre compare`, `lre kappa`, `lre did` (defense-in-depth), `lre cache info|clear|migrate`, `lre lint`, `lre reproduce`.
 - **Validation**: hand-labeled set at `examples/data/validation_set.jsonl` (N=30) with `examples/validate_judge.py` reporting accuracy + κ. CI pins rule-judge κ ≥ 0.70 via `tests/test_validation_set.py`.
+- **Real-model results**: `examples/data/qwen2_0_5b_harmful_helpful.json` and `examples/data/qwen2_1_5b_harmful_helpful.json` — measurements on `Qwen/Qwen2-0.5B-Instruct` (refusal rate 0.333, CI [0.15, 0.58]) and `Qwen/Qwen2-1.5B-Instruct` (refusal rate 0.467, CI [0.25, 0.70]) on the `harmful_helpful` suite at seed=42, temperature=0.0. Zero over-refusal on the helpful subset for both.
 - **Quality bar**: pytest, ruff lint + format, mypy `--strict`. CI on Python 3.10 / 3.11 / 3.12.
