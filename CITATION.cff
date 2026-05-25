@@ -1,0 +1,86 @@
+cff-version: 1.2.0
+message: "If you use this software in academic work, please cite it as below."
+title: "lm-refusal-eval: a reproducible refusal-rate evaluation harness for open-weight LLMs"
+version: 0.8.0
+date-released: 2026-05-24
+authors:
+  - family-names: "Gorbuk"
+    given-names: "Max"
+    email: "103102868+mkzung@users.noreply.github.com"
+license: MIT
+repository-code: "https://github.com/mkzung/lm-refusal-eval"
+keywords:
+  - large language models
+  - red-teaming
+  - adversarial robustness
+  - evaluation
+  - AI safety
+references:
+  - type: article
+    authors:
+      - family-names: "Howe"
+        given-names: "Nikolaus"
+      - family-names: "McKenzie"
+        given-names: "Ian R."
+      - family-names: "Hollinsworth"
+        given-names: "Oskar"
+      - family-names: "Zajac"
+        given-names: "Michał"
+      - family-names: "Tseng"
+        given-names: "Tom"
+      - family-names: "Tucker"
+        given-names: "Aaron"
+      - family-names: "Bacon"
+        given-names: "Pierre-Luc"
+      - family-names: "Gleave"
+        given-names: "Adam"
+    title: "Scaling Trends in Language Model Robustness"
+    year: 2025
+    notes: "ICML 2025 (v5 of the preprint, renamed from the v4 working title 'Effects of Scale on Language Model Robustness')."
+    identifiers:
+      - type: other
+        value: "arXiv:2407.18213v5"
+    url: "https://www.far.ai/news/does-robustness-improve-with-scale"
+    publisher:
+      name: "FAR.AI"
+  - type: article
+    authors:
+      - family-names: "Hollinsworth"
+        given-names: "Oskar"
+      - family-names: "Tseng"
+        given-names: "Tom"
+      - family-names: "Howe"
+        given-names: "Nikolaus"
+      - family-names: "Tucker"
+        given-names: "Aaron"
+      - family-names: "McKenzie"
+        given-names: "Ian R."
+      - family-names: "Gleave"
+        given-names: "Adam"
+    title: "STACK: Adversarial Attacks on LLM Safeguard Pipelines"
+    year: 2025
+    notes: "FAR.AI companion blog 'Layered AI Defenses Have Holes' at https://www.far.ai/news. lre's joint OR baseline in `lre did` is INSPIRED BY STACK's measurement protocol but is not a literal implementation of STACK's adaptive attack."
+    identifiers:
+      - type: other
+        value: "arXiv:2506.24068"
+    url: "https://arxiv.org/abs/2506.24068"
+    publisher:
+      name: "FAR.AI"
+  - type: article
+    authors:
+      - family-names: "Mazeika"
+        given-names: "Mantas"
+    title: "HarmBench: A Standardized Evaluation Framework for Automated Red Teaming and Robust Refusal"
+    year: 2024
+  - type: article
+    authors:
+      - family-names: "Chao"
+        given-names: "Patrick"
+    title: "JailbreakBench: An Open Robustness Benchmark for Jailbreaking Large Language Models"
+    year: 2024
+  - type: article
+    authors:
+      - family-names: "Zou"
+        given-names: "Andy"
+    title: "Universal and Transferable Adversarial Attacks on Aligned Language Models"
+    year: 2023

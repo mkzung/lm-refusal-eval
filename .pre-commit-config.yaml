@@ -1,0 +1,23 @@
+repos:
+  # Ruff version is pinned to match pyproject.toml [project.optional-dependencies].dev
+  # exactly. Bump both files together so local pre-commit runs and CI
+  # never diverge on lint/format rules.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.13
+    hooks:
+      - id: ruff
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [pydantic>=2.7, click>=8.0]
+        args: [--strict]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
