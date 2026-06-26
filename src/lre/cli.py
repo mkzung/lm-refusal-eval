@@ -1402,6 +1402,22 @@ def lint(suite_path: Path) -> None:
     sys.exit(1)
 
 
+@main.command("suites", help="List the bundled prompt suites with their sizes and category mix.")
+def suites() -> None:
+    names = list_suites()
+    if not names:
+        click.echo("No bundled suites found.")
+        return
+    click.echo("Bundled suites:")
+    for name in names:
+        prompts = load_suite(name)
+        counts: dict[str, int] = {}
+        for prompt in prompts:
+            counts[prompt.category] = counts.get(prompt.category, 0) + 1
+        mix = ", ".join(f"{cat} {counts[cat]}" for cat in sorted(counts))
+        click.echo(f"  {name}  ({len(prompts)} prompts: {mix})")
+
+
 # ---------------------------------------------------------------------------
 # reproduce
 # ---------------------------------------------------------------------------

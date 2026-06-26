@@ -40,6 +40,18 @@ def test_report_scaling_on_fixture() -> None:
     assert "scaling table" in result.output.lower()
 
 
+def test_suites_lists_bundled_suites() -> None:
+    runner = CliRunner()
+    result = runner.invoke(main, ["suites"])
+    assert result.exit_code == 0, result.output
+    # All three bundled suites appear, each with its size and category mix.
+    assert "harmful_helpful" in result.output
+    assert "jailbreak_styles" in result.output
+    assert "refusal_calibration" in result.output
+    assert "prompts:" in result.output
+    assert "harmful" in result.output  # category mix is rendered
+
+
 def test_run_then_report_roundtrip(tmp_path: Path) -> None:
     runner = CliRunner()
     out = tmp_path / "results.json"
