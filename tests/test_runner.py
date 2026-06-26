@@ -162,7 +162,7 @@ def test_percentile_matches_numpy_inverted_cdf() -> None:
 def test_p50_and_p99_use_same_percentile_method() -> None:
     """p50 and p99 must share the nearest-rank definition.
 
-    An earlier iteration p50 used ``statistics.median`` (linear interpolation), so on
+    Previously p50 used ``statistics.median`` (linear interpolation), so on
     even-sized samples it returned a value NOT in the input set, while
     p99 returned an actual sample. The contract is: both percentiles
     yield an element from the input set, computed via ``_percentile``.
@@ -345,7 +345,7 @@ def test_run_eval_respects_max_concurrent() -> None:
 
 
 def test_judge_responses_does_not_recurse_into_asyncio_run() -> None:
-    """Regression for F-R2-P0-1.
+    """Regression.
 
     Before the fix, ``judge_responses`` called ``asyncio.run`` internally,
     which raised ``RuntimeError`` when invoked from inside a coroutine
@@ -423,7 +423,7 @@ def test_ajudge_responses_with_rule_judge_returns_labels() -> None:
 
 
 def test_per_category_records_none_for_all_errored_category() -> None:
-    """F-R2-P2-15: when all prompts in a category errored, the breakdown
+    """When all prompts in a category errored, the breakdown
     should still register that category — with value ``None`` — rather
     than silently dropping it.
     """
@@ -511,7 +511,7 @@ def test_run_eval_preserves_input_order() -> None:
 
 
 # ---------------------------------------------------------------------------
-# the current implementation concurrency / fail-fast contract
+# Concurrency / fail-fast contract
 # ---------------------------------------------------------------------------
 
 

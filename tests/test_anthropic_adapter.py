@@ -173,7 +173,7 @@ def test_anthropic_client_propagates_other_4xx() -> None:
 
 
 def test_anthropic_client_raises_authentication_error_on_401() -> None:
-    """F-R3-P1-5: 401 must surface as a non-retryable AuthenticationError,
+    """401 must surface as a non-retryable AuthenticationError,
     not a raw httpx.HTTPStatusError with stack trace.
     """
     from lre.models.anthropic_api import AuthenticationError
@@ -192,7 +192,7 @@ def test_anthropic_client_raises_authentication_error_on_401() -> None:
 
 
 def test_anthropic_client_raises_authentication_error_on_403() -> None:
-    """F-R3-P1-5: 403 (forbidden) is also non-retryable auth failure."""
+    """403 (forbidden) is also non-retryable auth failure."""
     from lre.models.anthropic_api import AuthenticationError
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -221,7 +221,7 @@ def test_anthropic_client_empty_content_yields_empty_output() -> None:
 
 
 def test_anthropic_client_reuses_async_client_across_calls() -> None:
-    """F-R2-P2-10: a single AnthropicClient must reuse one
+    """A single AnthropicClient must reuse one
     httpx.AsyncClient across multiple ``generate`` calls. We mock the
     httpx.AsyncClient constructor and assert it is invoked exactly once
     even after several requests.
@@ -280,7 +280,7 @@ def test_anthropic_client_works_as_context_manager() -> None:
 
 
 # ---------------------------------------------------------------------------
-# the current implementation (P1-6, P1-20): jitter is seeded; httpx client respects configured
+# Jitter is seeded; httpx client respects configured
 # Limits + Timeout
 # ---------------------------------------------------------------------------
 
@@ -289,7 +289,7 @@ def test_anthropic_jitter_is_seeded_for_byte_identical_retries() -> None:
     """Two clients with the same ``jitter_seed`` produce the same
     decorrelated-backoff sequence.
 
-    An earlier iteration ``random.uniform`` used the module-level RNG, so retries
+    Previously ``random.uniform`` used the module-level RNG, so retries
     were non-reproducible — silently breaking the byte-identity claim
     for any run that ever hit a 429.
     """

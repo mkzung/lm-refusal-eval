@@ -121,7 +121,7 @@ def test_from_json_rejects_non_array() -> None:
 
 
 # ---------------------------------------------------------------------------
-# F-R2-T-16: per-category sub-table tests
+# Per-category sub-table tests
 # ---------------------------------------------------------------------------
 
 
@@ -195,7 +195,7 @@ def test_markdown_per_category_subtable_emitted_with_alphabetical_columns() -> N
 
 
 def test_to_markdown_escapes_pipe_in_model_name() -> None:
-    """F-R2-P3-21: a model name containing a pipe must be escaped so
+    """A model name containing a pipe must be escaped so
     the table layout is not corrupted.
     """
     rows = [
@@ -245,7 +245,7 @@ def test_escape_md_idempotent_on_normal_input() -> None:
 
 
 def test_scaling_table_message_when_all_none() -> None:
-    """F-R2-P2-14: when every row's refusal_rate is None, the table
+    """When every row's refusal_rate is None, the table
     must use the explicit 'every model errored on every prompt' message
     rather than the generic '_No results._'.
     """

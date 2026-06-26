@@ -1,6 +1,6 @@
 """Tests for :mod:`lre.cache`.
 
-The cache is the lowest-friction feature shipped in the current implementation: a user with
+The cache is the lowest-friction feature shipped in the implementation: a user with
 a ``--cache .lre-cache/`` flag spends API quota once and replays the
 same generation locally on every subsequent run. These tests pin the
 key derivation, the on-disk layout, and the runner's wiring.
@@ -74,7 +74,7 @@ def test_cache_key_includes_all_relevant_fields() -> None:
 
 
 def test_cache_key_distinguishes_chat_template_flag() -> None:
-    """F-R4-P1-2: an effective-name that bakes in the chat-template suffix
+    """An effective-name that bakes in the chat-template suffix
     must produce a different cache key from the bare model id.
 
     Without this, an ``HFLocalClient`` with ``use_chat_template=True``
@@ -107,7 +107,7 @@ def test_cache_key_extra_parts_distinguish_keys() -> None:
     )
     assert base != widened
     # Default empty tuple matches the legacy key format byte-for-byte,
-    # so the current implementation cache directories remain readable.
+    # so the implementation cache directories remain readable.
     legacy = _cache_key(
         model="m",
         prompt="hi",
@@ -120,7 +120,7 @@ def test_cache_key_extra_parts_distinguish_keys() -> None:
 
 
 def test_cache_atomic_write_leaves_no_partial_files(tmp_path: Path) -> None:
-    """F-R4-P2-10: a .tmp file left from a killed write must not be served as a hit.
+    """A .tmp file left from a killed write must not be served as a hit.
 
     Simulates ``put`` crashing partway by writing a ``<key>.json.tmp``
     by hand and never renaming it. The cache should still report a miss
@@ -363,14 +363,14 @@ def test_module_imports() -> None:
 
 
 # ---------------------------------------------------------------------------
-# the current implementation contract: canonical-JSON key + sentinel + collision safety
+# Contract: canonical-JSON key + sentinel + collision safety
 # ---------------------------------------------------------------------------
 
 
 def test_cache_key_resists_delimiter_collision() -> None:
-    """the current implementation: pathological ``|``-laden inputs must not collide.
+    """Pathological ``|``-laden inputs must not collide.
 
-    Under the an earlier iteration pipe-joined key, ``model='a|b' + prompt='c'`` and
+    Under the an earlier version pipe-joined key, ``model='a|b' + prompt='c'`` and
     ``model='a' + prompt='b|c'`` hashed to the same bytes. The
     canonical-JSON key keeps them distinct.
     """
@@ -380,7 +380,7 @@ def test_cache_key_resists_delimiter_collision() -> None:
 
 
 def test_cache_sentinel_is_written_on_construction(tmp_path: Path) -> None:
-    """the current implementation: ``ResponseCache`` drops a ``.lre-cache`` sentinel."""
+    """``ResponseCache`` drops a ``.lre-cache`` sentinel."""
     from lre.cache import SENTINEL_FILENAME, is_lre_cache_dir
 
     cache_dir = tmp_path / "with-sentinel"
@@ -402,7 +402,7 @@ def test_cache_sentinel_is_absent_on_arbitrary_directory(tmp_path: Path) -> None
 def test_cache_sentinel_rejects_invalid_content(tmp_path: Path) -> None:
     """a bare-touched ``.lre-cache`` file no longer passes.
 
-    An earlier iteration ``is_lre_cache_dir`` only checked existence. An attacker
+    Previously ``is_lre_cache_dir`` only checked existence. An attacker
     (or an accidental ``touch .lre-cache``) could pass the check
     without a real sentinel.
     """
@@ -427,7 +427,7 @@ def test_cache_sentinel_rejects_invalid_content(tmp_path: Path) -> None:
 
 def test_cli_cache_migrate_writes_sentinel(tmp_path: Path) -> None:
     """``lre cache migrate`` writes the sentinel on a
-    an earlier iteration cache directory that has cached entries but no marker.
+    an earlier version cache directory that has cached entries but no marker.
     """
     from click.testing import CliRunner
 

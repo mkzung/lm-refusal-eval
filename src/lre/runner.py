@@ -501,12 +501,11 @@ def aggregate_results(
             bools = per_category.get(cat, [])
             by_category[cat] = (sum(bools) / len(bools)) if bools else None
 
-    # both percentiles use the same nearest-rank definition
-    # so they cannot silently drift apart. An earlier iteration used
-    # ``statistics.median`` (linear interpolation, R Type 7) for p50 and
-    # nearest-rank for p99 — a reported "p50 < p99" relationship that
-    # held by accident on continuous data but became inconsistent on
-    # small or repeated samples.
+    # Both percentiles use the same nearest-rank definition so they
+    # cannot silently drift apart. Using ``statistics.median`` (linear
+    # interpolation, R Type 7) for p50 and nearest-rank for p99 would make
+    # the "p50 <= p99" relationship hold only by accident on continuous
+    # data and break on small or repeated samples.
     latencies = [r.generation_seconds for r in responses if r.generation_seconds >= 0]
     p50 = _percentile(latencies, 0.50) if latencies else 0.0
     p99 = _percentile(latencies, 0.99) if latencies else 0.0
@@ -558,10 +557,10 @@ def _percentile(values: Iterable[float], q: float) -> float:
     rule, which is the rank that NIST and most percentile tables call
     "Type 1" — pinning it makes the latency contract auditable.
 
-    The runner uses this for BOTH p50 and p99 — an earlier iteration, p50 used
-    ``statistics.median`` (linear-interpolation, R Type 7) which produced
-    a value not present in the input set for even-sized samples. Pinning
-    both percentiles to the same definition makes the latency contract
+    The runner uses this for BOTH p50 and p99. Using ``statistics.median``
+    (linear-interpolation, R Type 7) for p50 would produce a value not
+    present in the input set for even-sized samples. Pinning both
+    percentiles to the same definition makes the latency contract
     auditable.
     """
     items = sorted(values)

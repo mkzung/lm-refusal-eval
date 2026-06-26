@@ -82,7 +82,7 @@ def test_unknown_suite_exits_nonzero(tmp_path: Path) -> None:
 
 
 def test_lre_demo_is_byte_stable_across_invocations() -> None:
-    """F-R2-T-17: two demo invocations with identical args must emit
+    """Two demo invocations with identical args must emit
     byte-identical Markdown. We use Click's CliRunner so the test does
     not depend on a subprocess shell.
     """
@@ -96,7 +96,7 @@ def test_lre_demo_is_byte_stable_across_invocations() -> None:
 
 
 def test_run_rejects_invalid_max_concurrent(tmp_path: Path) -> None:
-    """F-R2-P1-7: ``--max-concurrent 0`` violates the RunConfig
+    """``--max-concurrent 0`` violates the RunConfig
     constraint. The CLI must surface this as a clean error, not a raw
     Pydantic traceback.
     """
@@ -123,9 +123,9 @@ def test_run_rejects_invalid_max_concurrent(tmp_path: Path) -> None:
 
 
 def test_run_rejects_invalid_temperature(tmp_path: Path) -> None:
-    """``--temperature 10.0`` violates RunConfig (max 5.0 as of the current implementation).
+    """``--temperature 10.0`` violates RunConfig (max 5.0).
 
-    the current implementation raised the ceiling from 2.0 to 5.0 so local HF checkpoints
+    the implementation raised the ceiling from 2.0 to 5.0 so local HF checkpoints
     and OpenAI-compatible endpoints (vLLM, Azure, OpenRouter) that
     accept temperatures above the OpenAI public-API limit are usable.
     A nonsense value like 10.0 still fails fast.
@@ -152,7 +152,7 @@ def test_run_rejects_invalid_temperature(tmp_path: Path) -> None:
 
 
 def test_run_accepts_temperature_above_two(tmp_path: Path) -> None:
-    """the current implementation: ``--temperature 3.0`` is accepted (was rejected in the current implementation)."""
+    """``--temperature 3.0`` is accepted (previously rejected)."""
     runner = CliRunner()
     out = tmp_path / "x.json"
     result = runner.invoke(
@@ -187,7 +187,7 @@ def _eval_result(model: str, suite: str, refused: int, complied: int) -> EvalRes
 
 
 def test_compare_command_outputs_delta_and_p_value(tmp_path: Path) -> None:
-    """NEW-R2-1: ``lre compare`` should print a Δ refusal-rate table with
+    """``lre compare`` should print a Δ refusal-rate table with
     a p-value.
     """
     runner = CliRunner()
@@ -203,7 +203,7 @@ def test_compare_command_outputs_delta_and_p_value(tmp_path: Path) -> None:
 
 
 def test_lint_clean_suite_exits_zero() -> None:
-    """NEW-R2-2: linting the bundled suites should be clean."""
+    """Linting the bundled suites should be clean."""
     runner = CliRunner()
     import importlib.resources
 
@@ -213,7 +213,7 @@ def test_lint_clean_suite_exits_zero() -> None:
 
 
 def test_lint_reports_duplicate_id(tmp_path: Path) -> None:
-    """NEW-R2-2: duplicate ids must surface as a line-level error."""
+    """Duplicate ids must surface as a line-level error."""
     runner = CliRunner()
     bad = tmp_path / "bad.jsonl"
     bad.write_text(
@@ -227,7 +227,7 @@ def test_lint_reports_duplicate_id(tmp_path: Path) -> None:
 
 
 def test_kappa_command_perfect_agreement(tmp_path: Path) -> None:
-    """NEW-R2-3: identical label files give κ = 1.0."""
+    """Identical label files give κ = 1.0."""
     runner = CliRunner()
     labels = [
         RefusalLabel(
@@ -246,7 +246,7 @@ def test_kappa_command_perfect_agreement(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# F-R3-P0-2: compare validation + --by suite + --confidence
+# Compare validation + --by suite + --confidence
 # ---------------------------------------------------------------------------
 
 
@@ -259,7 +259,7 @@ def _two_pair_results() -> list[EvalResult]:
 
 
 def test_compare_rejects_multi_pair_inputs_without_by(tmp_path: Path) -> None:
-    """F-R3-P0-2: file A with multiple (model, suite) pairs must be
+    """File A with multiple (model, suite) pairs must be
     refused without ``--by suite``.
     """
     runner = CliRunner()
@@ -274,7 +274,7 @@ def test_compare_rejects_multi_pair_inputs_without_by(tmp_path: Path) -> None:
 
 
 def test_compare_by_suite_aggregates_per_suite(tmp_path: Path) -> None:
-    """F-R3-P0-2: ``--by suite`` produces a per-suite delta table."""
+    """``--by suite`` produces a per-suite delta table."""
     runner = CliRunner()
     a_path = tmp_path / "a.json"
     b_path = tmp_path / "b.json"
@@ -296,7 +296,7 @@ def test_compare_by_suite_aggregates_per_suite(tmp_path: Path) -> None:
 
 
 def test_compare_single_pair_shows_model_and_suite(tmp_path: Path) -> None:
-    """F-R3-P2-18: the model and suite names are visible in the header."""
+    """The model and suite names are visible in the header."""
     runner = CliRunner()
     a_path = tmp_path / "a.json"
     b_path = tmp_path / "b.json"
@@ -310,7 +310,7 @@ def test_compare_single_pair_shows_model_and_suite(tmp_path: Path) -> None:
 
 
 def test_compare_different_suites_emits_warning(tmp_path: Path) -> None:
-    """F-R3-P0-2: comparing different suites must surface a warning."""
+    """Comparing different suites must surface a warning."""
     runner = CliRunner()
     a_path = tmp_path / "a.json"
     b_path = tmp_path / "b.json"
@@ -324,7 +324,7 @@ def test_compare_different_suites_emits_warning(tmp_path: Path) -> None:
 
 
 def test_compare_confidence_99_widens_interval(tmp_path: Path) -> None:
-    """NEW-R3-3: ``--confidence 0.99`` produces a wider CI than 0.95."""
+    """``--confidence 0.99`` produces a wider CI than 0.95."""
     runner = CliRunner()
     a_path = tmp_path / "a.json"
     b_path = tmp_path / "b.json"
@@ -340,7 +340,7 @@ def test_compare_confidence_99_widens_interval(tmp_path: Path) -> None:
 
 
 def test_compare_confidence_90_path(tmp_path: Path) -> None:
-    """NEW-R3-3: ``--confidence 0.90`` is also accepted."""
+    """``--confidence 0.90`` is also accepted."""
     runner = CliRunner()
     a_path = tmp_path / "a.json"
     b_path = tmp_path / "b.json"
@@ -352,7 +352,7 @@ def test_compare_confidence_90_path(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# F-R3-P0-3: kappa drop warnings + --strict
+# Kappa drop warnings + --strict
 # ---------------------------------------------------------------------------
 
 
@@ -369,7 +369,7 @@ def _write_labels(path: Path, pairs: list[tuple[str, bool]]) -> None:
 
 
 def test_kappa_full_overlap_no_warnings(tmp_path: Path) -> None:
-    """F-R3-P0-3: identical prompt-id sets produce no drop warnings."""
+    """Identical prompt-id sets produce no drop warnings."""
     runner = CliRunner()
     a = tmp_path / "a.json"
     b = tmp_path / "b.json"
@@ -382,7 +382,7 @@ def test_kappa_full_overlap_no_warnings(tmp_path: Path) -> None:
 
 
 def test_kappa_partial_overlap_warns_and_drops(tmp_path: Path) -> None:
-    """F-R3-P0-3: non-overlapping prompt_ids → warning lists dropped ids."""
+    """Non-overlapping prompt_ids → warning lists dropped ids."""
     runner = CliRunner()
     a = tmp_path / "a.json"
     b = tmp_path / "b.json"
@@ -398,7 +398,7 @@ def test_kappa_partial_overlap_warns_and_drops(tmp_path: Path) -> None:
 
 
 def test_kappa_strict_fails_on_partial_overlap(tmp_path: Path) -> None:
-    """F-R3-P0-3: --strict turns a partial overlap into an error."""
+    """--strict turns a partial overlap into an error."""
     runner = CliRunner()
     a = tmp_path / "a.json"
     b = tmp_path / "b.json"
@@ -413,12 +413,12 @@ def test_kappa_strict_fails_on_partial_overlap(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# F-R3-P1-4: clean error messages on malformed JSON
+# Clean error messages on malformed JSON
 # ---------------------------------------------------------------------------
 
 
 def test_compare_bad_json_emits_clean_error(tmp_path: Path) -> None:
-    """F-R3-P1-4: malformed JSON must produce a one-line click error,
+    """Malformed JSON must produce a one-line click error,
     not a Python traceback.
     """
     runner = CliRunner()
@@ -431,7 +431,7 @@ def test_compare_bad_json_emits_clean_error(tmp_path: Path) -> None:
 
 
 def test_compare_non_array_emits_clean_error(tmp_path: Path) -> None:
-    """F-R3-P1-4: JSON that is valid but not a list must error cleanly."""
+    """JSON that is valid but not a list must error cleanly."""
     runner = CliRunner()
     bad = tmp_path / "obj.json"
     bad.write_text('{"not": "a list"}', encoding="utf-8")
@@ -442,7 +442,7 @@ def test_compare_non_array_emits_clean_error(tmp_path: Path) -> None:
 
 
 def test_report_bad_json_emits_clean_error(tmp_path: Path) -> None:
-    """F-R3-P1-4: same protection on ``lre report``."""
+    """Same protection on ``lre report``."""
     runner = CliRunner()
     bad = tmp_path / "bad.json"
     bad.write_text("definitely not json", encoding="utf-8")
@@ -453,7 +453,7 @@ def test_report_bad_json_emits_clean_error(tmp_path: Path) -> None:
 
 
 def test_judge_bad_json_emits_clean_error(tmp_path: Path) -> None:
-    """F-R3-P1-4: ``lre judge --in`` must reject bad JSON cleanly."""
+    """``lre judge --in`` must reject bad JSON cleanly."""
     runner = CliRunner()
     bad = tmp_path / "bad.json"
     bad.write_text("{not even close", encoding="utf-8")
@@ -468,7 +468,7 @@ def test_judge_bad_json_emits_clean_error(tmp_path: Path) -> None:
 
 
 def test_kappa_bad_json_emits_clean_error(tmp_path: Path) -> None:
-    """F-R3-P1-4: ``lre kappa`` must reject bad JSON cleanly."""
+    """``lre kappa`` must reject bad JSON cleanly."""
     runner = CliRunner()
     bad = tmp_path / "bad.json"
     bad.write_text("nope", encoding="utf-8")
@@ -482,14 +482,14 @@ def test_kappa_bad_json_emits_clean_error(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# F-R3-P1-5: auth errors produce clean exits
+# Auth errors produce clean exits
 # ---------------------------------------------------------------------------
 
 
 def test_run_missing_anthropic_api_key_exits_cleanly(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """F-R3-P1-5: a missing API key surfaces as a clean click.UsageError,
+    """A missing API key surfaces as a clean click.UsageError,
     not a per-prompt traceback.
     """
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
@@ -517,7 +517,7 @@ def test_run_missing_anthropic_api_key_exits_cleanly(
 def test_run_missing_openai_api_key_exits_cleanly(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """F-R3-P1-5: same for OpenAI."""
+    """Same for OpenAI."""
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     runner = CliRunner()
     out = tmp_path / "x.json"
@@ -543,7 +543,7 @@ def test_run_missing_openai_api_key_exits_cleanly(
 def test_run_with_anthropic_401_surfaces_clean_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """F-R3-P1-5: when the adapter receives a 401, the CLI exits cleanly
+    """When the adapter receives a 401, the CLI exits cleanly
     instead of dumping a per-prompt traceback for every prompt in the
     suite (15 in harmful_helpful).
     """
@@ -587,12 +587,12 @@ def test_run_with_anthropic_401_surfaces_clean_error(
 
 
 # ---------------------------------------------------------------------------
-# F-R3-P1-6: --fake-refusal-rate plumbing
+# --fake-refusal-rate plumbing
 # ---------------------------------------------------------------------------
 
 
 def test_run_fake_refusal_rate_matches_demo(tmp_path: Path) -> None:
-    """F-R3-P1-6: ``lre run --adapter fake --fake-refusal-rate 0.6``
+    """``lre run --adapter fake --fake-refusal-rate 0.6``
     produces the same headline numbers as ``lre demo`` (which defaults
     to 0.6).
     """
@@ -621,12 +621,12 @@ def test_run_fake_refusal_rate_matches_demo(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# F-R3-P1-7: demo prints next-steps hint
+# Demo prints next-steps hint
 # ---------------------------------------------------------------------------
 
 
 def test_demo_prints_next_steps_hint() -> None:
-    """F-R3-P1-7: a researcher running ``lre demo`` should see a Next
+    """A researcher running ``lre demo`` should see a Next
     steps block pointing at ``lre run`` and ``lre compare``.
     """
     runner = CliRunner()
@@ -639,12 +639,12 @@ def test_demo_prints_next_steps_hint() -> None:
 
 
 # ---------------------------------------------------------------------------
-# NEW-R3-1: --dump-raw
+# --dump-raw
 # ---------------------------------------------------------------------------
 
 
 def test_run_dump_raw_writes_jsonl(tmp_path: Path) -> None:
-    """NEW-R3-1: ``--dump-raw <path>`` writes per-prompt JSONL with one
+    """``--dump-raw <path>`` writes per-prompt JSONL with one
     object per line, count matching the suite size.
     """
     runner = CliRunner()
@@ -678,7 +678,7 @@ def test_run_dump_raw_writes_jsonl(tmp_path: Path) -> None:
 
 
 def test_judge_can_rejudge_from_dump_raw(tmp_path: Path) -> None:
-    """NEW-R3-1: ``lre judge --in <dump>.jsonl`` re-judges without
+    """``lre judge --in <dump>.jsonl`` re-judges without
     re-running generation.
     """
     runner = CliRunner()
@@ -709,12 +709,12 @@ def test_judge_can_rejudge_from_dump_raw(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# NEW-R3-2: report --diff
+# Report --diff
 # ---------------------------------------------------------------------------
 
 
 def test_report_diff_no_flips(tmp_path: Path) -> None:
-    """NEW-R3-2: identical labels → zero flips on either direction."""
+    """Identical labels → zero flips on either direction."""
     runner = CliRunner()
     pairs = [("p1", True), ("p2", False), ("p3", True)]
     a = tmp_path / "a.json"
@@ -743,7 +743,7 @@ def test_report_diff_no_flips(tmp_path: Path) -> None:
 
 
 def test_report_diff_all_flipped(tmp_path: Path) -> None:
-    """NEW-R3-2: every prompt flips → both lists are populated."""
+    """Every prompt flips → both lists are populated."""
     runner = CliRunner()
     baseline = [("p1", True), ("p2", False), ("p3", True), ("p4", False)]
     current = [(pid, not ref) for pid, ref in baseline]
@@ -772,7 +772,7 @@ def test_report_diff_all_flipped(tmp_path: Path) -> None:
 
 
 def test_report_diff_partial_flip(tmp_path: Path) -> None:
-    """NEW-R3-2: only one prompt flipped — surfaced exactly."""
+    """Only one prompt flipped — surfaced exactly."""
     runner = CliRunner()
     baseline = [("p1", True), ("p2", False), ("p3", True)]
     current = [("p1", True), ("p2", True), ("p3", True)]
@@ -803,14 +803,14 @@ def test_report_diff_partial_flip(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# F-R3-P2-9: CLI coverage gaps
+# CLI coverage gaps
 # ---------------------------------------------------------------------------
 
 
 def test_run_with_anthropic_adapter_happy_path(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """F-R3-P2-9: cover ``--adapter anthropic`` happy path against a
+    """Cover ``--adapter anthropic`` happy path against a
     MockTransport-backed AsyncClient.
     """
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test")
@@ -855,7 +855,7 @@ def test_run_with_anthropic_adapter_happy_path(
 
 
 def test_build_client_fake_uses_seed(tmp_path: Path) -> None:
-    """F-R3-P2-9: ``_build_client('fake', ...)`` round-trips through the
+    """``_build_client('fake', ...)`` round-trips through the
     CLI happy path.
     """
     from lre.cli import _build_client
@@ -873,7 +873,7 @@ def test_build_client_fake_uses_seed(tmp_path: Path) -> None:
 
 
 def test_build_client_hf_requires_model_id() -> None:
-    """F-R3-P2-9: ``--adapter hf`` without ``--model-id`` errors clean."""
+    """``--adapter hf`` without ``--model-id`` errors clean."""
     from lre.cli import _build_client
 
     with pytest.raises(Exception):  # noqa: B017 — Click UsageError
@@ -888,7 +888,7 @@ def test_build_client_hf_requires_model_id() -> None:
 
 
 def test_build_llm_judge_missing_key(monkeypatch: pytest.MonkeyPatch) -> None:
-    """F-R3-P2-9: judge builder must fail fast on missing key."""
+    """Judge builder must fail fast on missing key."""
     from lre.cli import _build_llm_judge
 
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
@@ -899,7 +899,7 @@ def test_build_llm_judge_missing_key(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_build_llm_judge_constructs_when_key_present(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """F-R3-P2-9: judge builder succeeds when the env var is set."""
+    """Judge builder succeeds when the env var is set."""
     from lre.cli import _build_llm_judge
 
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test")
@@ -908,7 +908,7 @@ def test_build_llm_judge_constructs_when_key_present(
 
 
 def test_judge_happy_path_round_trip(tmp_path: Path) -> None:
-    """F-R3-P2-9: ``lre judge`` end-to-end happy path."""
+    """``lre judge`` end-to-end happy path."""
     runner = CliRunner()
     raw_path = tmp_path / "raw.json"
     raw_path.write_text(
@@ -935,12 +935,12 @@ def test_judge_happy_path_round_trip(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# F-R3-P2-19: BOM handling in suite files
+# BOM handling in suite files
 # ---------------------------------------------------------------------------
 
 
 def test_lint_handles_bom_prefixed_suite(tmp_path: Path) -> None:
-    """F-R3-P2-19: a UTF-8 byte-order mark at the start of a suite must
+    """A UTF-8 byte-order mark at the start of a suite must
     NOT corrupt the first JSON parse.
     """
     runner = CliRunner()
@@ -954,12 +954,12 @@ def test_lint_handles_bom_prefixed_suite(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# F-R3-P2-20: lint output format for file-level issues
+# Lint output format for file-level issues
 # ---------------------------------------------------------------------------
 
 
 def test_lint_empty_suite_omits_line_no(tmp_path: Path) -> None:
-    """F-R3-P2-20: ``suite contains no prompts`` is a file-level issue;
+    """``suite contains no prompts`` is a file-level issue;
     output must drop the awkward ``:-:`` line-number segment.
     """
     runner = CliRunner()
@@ -974,13 +974,13 @@ def test_lint_empty_suite_omits_line_no(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# the current implementation: edge-case input validation on CLI options
+# Edge-case input validation on CLI options
 # ---------------------------------------------------------------------------
 
 
 def test_run_sample_zero_clean_error(tmp_path: Path) -> None:
     """``--sample 0`` must fail with a Click range error, not silently
-    fall through to the full suite (F-R4-P2-6)."""
+    fall through to the full suite."""
     runner = CliRunner()
     out = tmp_path / "x.json"
     result = runner.invoke(
@@ -1028,7 +1028,7 @@ def test_run_sample_negative_clean_error(tmp_path: Path) -> None:
 
 def test_compare_unsupported_confidence_clean_error(tmp_path: Path) -> None:
     """``lre compare --confidence 0.5`` must reject with a Click choice
-    error, not a raw ValueError traceback (F-R4-P2-7)."""
+    error, not a raw ValueError traceback."""
     runner = CliRunner()
     a = tmp_path / "a.json"
     b = tmp_path / "b.json"
@@ -1050,7 +1050,7 @@ def test_compare_unsupported_confidence_clean_error(tmp_path: Path) -> None:
 
 def test_run_bad_cache_dir_clean_error(tmp_path: Path) -> None:
     """``--cache /dev/null`` (existing non-directory) must surface a
-    UsageError, not a FileNotFoundError traceback (F-R4-P1-3)."""
+    UsageError, not a FileNotFoundError traceback."""
     runner = CliRunner()
     out = tmp_path / "r.json"
     # /dev/null exists as a character device — mkdir fails on it.
@@ -1075,7 +1075,7 @@ def test_run_bad_cache_dir_clean_error(tmp_path: Path) -> None:
 
 
 def test_run_cache_warns_on_nondeterministic_temperature(tmp_path: Path) -> None:
-    """F-R4-P2-9: caching at temperature>0 cements one sample; warn."""
+    """Caching at temperature>0 cements one sample; warn."""
     runner = CliRunner()
     out = tmp_path / "r.json"
     cache = tmp_path / "c"
@@ -1131,7 +1131,7 @@ def test_run_cache_nondet_warning_suppressed_by_flag(tmp_path: Path) -> None:
 
 
 def test_run_help_documents_use_chat_template() -> None:
-    """``lre run --help`` lists the chat-template toggle (F-R4-P2-14)."""
+    """``lre run --help`` lists the chat-template toggle."""
     runner = CliRunner()
     result = runner.invoke(main, ["run", "--help"])
     assert result.exit_code == 0
@@ -1182,7 +1182,7 @@ def test_build_client_threads_chat_template_flag_to_hf(monkeypatch: pytest.Monke
 
 
 def test_kappa_help_does_not_leak_audit_ids() -> None:
-    """``lre kappa --help`` must not contain internal F-R audit IDs (F-R4-P2-8)."""
+    """``lre kappa --help`` must not contain internal F-R audit IDs."""
     import re
 
     runner = CliRunner()
@@ -1192,7 +1192,7 @@ def test_kappa_help_does_not_leak_audit_ids() -> None:
 
 
 # ---------------------------------------------------------------------------
-# the current implementation: `lre cache` subcommands
+# the implementation: `lre cache` subcommands
 # ---------------------------------------------------------------------------
 
 
@@ -1220,7 +1220,7 @@ def test_cache_info_empty_directory(tmp_path: Path) -> None:
 
 
 def test_cache_info_refuses_directory_without_sentinel(tmp_path: Path) -> None:
-    """the current implementation safety: ``lre cache info`` refuses non-cache directories."""
+    """Safety: ``lre cache info`` refuses non-cache directories."""
     runner = CliRunner()
     cache_dir = tmp_path / "stray"
     cache_dir.mkdir()
@@ -1231,7 +1231,7 @@ def test_cache_info_refuses_directory_without_sentinel(tmp_path: Path) -> None:
 
 
 def test_cache_clear_refuses_directory_without_sentinel(tmp_path: Path) -> None:
-    """the current implementation safety: ``lre cache clear`` refuses non-cache directories."""
+    """Safety: ``lre cache clear`` refuses non-cache directories."""
     runner = CliRunner()
     cache_dir = tmp_path / "stray"
     cache_dir.mkdir()
@@ -1440,7 +1440,7 @@ def _synthetic_result(model: str, suite: str, refused: int, complied: int) -> Ev
 
 
 def test_safe_response_cache_refuses_leaf_symlink(tmp_path: Path) -> None:
-    """the current implementation baseline: a symlinked leaf cache dir is refused."""
+    """Baseline: a symlinked leaf cache dir is refused."""
     from lre.cli import _safe_response_cache
 
     real = tmp_path / "real"
@@ -1455,9 +1455,9 @@ def test_safe_response_cache_refuses_leaf_symlink(tmp_path: Path) -> None:
 def test_safe_response_cache_warns_on_parent_symlink(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """the current implementation: a symlink in a PARENT of the cache path warns but does not refuse.
+    """A symlink in a PARENT of the cache path warns but does not refuse.
 
-    An earlier iteration refused any parent symlink, which broke common benign cases:
+    Previously refused any parent symlink, which broke common benign cases:
     macOS ``/tmp -> /private/tmp`` and any user path containing ``..``.
     The new behavior preserves the leaf-symlink refusal (the actual
     attacker-controlled surface) and downgrades parent symlinks to a
@@ -1500,9 +1500,9 @@ def test_safe_response_cache_allows_parent_symlink_with_opt_in(
 
 
 def test_safe_response_cache_accepts_dotdot_in_path(tmp_path: Path) -> None:
-    """the current implementation: paths containing ``..`` segments are accepted (no symlinks involved).
+    """Paths containing ``..`` segments are accepted (no symlinks involved).
 
-    An earlier iteration compared ``absolute()`` (preserves ``..``) against
+    Previously compared ``absolute()`` (preserves ``..``) against
     ``resolve()`` (collapses ``..``), so ``foo/../cache`` triggered the
     symlink-refusal codepath even though no symlink existed.
     """
@@ -1521,11 +1521,11 @@ def test_safe_response_cache_accepts_dotdot_in_path(tmp_path: Path) -> None:
 def test_safe_response_cache_accepts_macos_style_tmp(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """the current implementation: macOS-style ``/tmp -> /private/tmp`` parent symlinks are accepted.
+    """MacOS-style ``/tmp -> /private/tmp`` parent symlinks are accepted.
 
     Simulates the macOS layout where ``/tmp`` is itself a system-level
-    symlink. An earlier iteration refused such paths for everyone using ``/tmp``;
-    the current implementation warns instead so the operator can proceed.
+    symlink. Previously refused such paths for everyone using ``/tmp``;
+    the implementation warns instead so the operator can proceed.
     """
     from lre.cli import _safe_response_cache
 
@@ -1658,7 +1658,7 @@ def test_reproduce_prints_lre_run_invocation(tmp_path: Path) -> None:
     assert result.exit_code == 0, result.output
     assert "Original lre version" in result.output
     assert "SOURCE_DATE_EPOCH" in result.output
-    # the current implementation: the reconstructed command always includes --adapter and
+    # The reconstructed command always includes --adapter and
     # carries the full CLI-input set captured in provenance.
     assert "lre run" in result.output
     assert "--adapter fake" in result.output
@@ -1673,7 +1673,7 @@ def test_reproduce_exec_roundtrip_matches_input(tmp_path: Path) -> None:
     The fake adapter is deterministic in ``(seed, prompts,
     refusal_rate)``, so the reconstructed run produces byte-identical
     EvalResult payloads when the captured ``fake_refusal_rate`` is
-    used (which the current implementation does — an earlier iteration hardcoded 0.5 and silently
+    used (which the implementation does — an earlier version hardcoded 0.5 and silently
     broke this invariant).
     """
     out_path = _run_for_reproduce(tmp_path, seed=5)
@@ -1701,7 +1701,7 @@ def test_reproduce_exec_roundtrip_matches_input(tmp_path: Path) -> None:
 
 
 def test_reproduce_refuses_results_without_provenance(tmp_path: Path) -> None:
-    """Legacy the current implementation result files (no provenance) cannot be reproduced — clean error."""
+    """Legacy the implementation result files (no provenance) cannot be reproduced — clean error."""
     # Hand-craft an EvalResult JSON without provenance.
     legacy_blob = [
         {
@@ -1728,7 +1728,7 @@ def test_reproduce_refuses_results_without_provenance(tmp_path: Path) -> None:
 
 
 def test_reproduce_rejects_pre_v1_provenance(tmp_path: Path) -> None:
-    """the current implementation: pre-v1.0 results files (no captured adapter) get a clean error.
+    """Pre-v1.0 results files (no captured adapter) get a clean error.
 
     Pre-v1.0 provenance lacks ``adapter`` / ``fake_refusal_rate`` /
     ``sample_n`` / ``judge_kind`` etc. so the reproduce path cannot
@@ -1770,14 +1770,14 @@ def test_reproduce_rejects_pre_v1_provenance(tmp_path: Path) -> None:
     runner = CliRunner()
     result = runner.invoke(main, ["reproduce", str(legacy_path)])
     assert result.exit_code != 0
-    # Error must mention both 'adapter' and 'the current implementation' so the operator
+    # Error must mention both 'adapter' and 'the implementation' so the operator
     # knows what to fix.
     assert "adapter" in result.output.lower()
     assert "current release" in result.output
 
 
 def test_reproduce_print_includes_all_captured_flags(tmp_path: Path) -> None:
-    """the current implementation: reproduce reconstructs the full CLI invocation, not just a 4-tuple.
+    """Reproduce reconstructs the full CLI invocation, not just a 4-tuple.
 
     Run with ``--fake-refusal-rate 0.7 --sample 3 --judge rule`` and
     confirm every captured flag shows up in the reconstructed command.
@@ -1822,12 +1822,12 @@ def test_reproduce_print_includes_all_captured_flags(tmp_path: Path) -> None:
 
 
 def test_reproduce_exec_byte_identical_with_source_date_epoch(tmp_path: Path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    """the current implementation: with SOURCE_DATE_EPOCH pinned, --exec is byte-identical to source.
+    """With SOURCE_DATE_EPOCH pinned, --exec is byte-identical to source.
 
     Includes ``--fake-refusal-rate 0.7`` and ``--sample 3`` so the test
-    actually exercises the legacy honest-reproduce path. An earlier iteration the
+    actually exercises the legacy honest-reproduce path. An earlier
     reproduce-exec hardcoded refusal_rate=0.5 and stripped --sample, so
-    this test would have failed against the current implementation.
+    this test would have failed against the implementation.
     """
     import hashlib
 
@@ -1876,9 +1876,9 @@ def test_reproduce_exec_byte_identical_with_source_date_epoch(tmp_path: Path, mo
 def test_reproduce_groups_by_judge_kind(tmp_path: Path) -> None:
     """runs differing only in judge collapse into separate commands.
 
-    An earlier iteration grouped by 4-tuple ignoring judge type, so a rule-judge
+    Previously grouped by 4-tuple ignoring judge type, so a rule-judge
     and llm-judge run with otherwise-identical knobs were silently
-    collapsed into a single reconstructed command. the current implementation includes
+    collapsed into a single reconstructed command. the implementation includes
     ``judge_kind`` in the group key so they stay distinct.
     """
     runner = CliRunner()

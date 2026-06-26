@@ -177,7 +177,7 @@ def test_openai_client_propagates_4xx_other_than_429() -> None:
 
 
 def test_openai_client_raises_authentication_error_on_401() -> None:
-    """F-R3-P1-5: 401 must surface as a non-retryable AuthenticationError,
+    """401 must surface as a non-retryable AuthenticationError,
     not a raw httpx.HTTPStatusError with stack trace.
     """
     from lre.models.openai_api import AuthenticationError
@@ -196,7 +196,7 @@ def test_openai_client_raises_authentication_error_on_401() -> None:
 
 
 def test_openai_client_raises_authentication_error_on_403() -> None:
-    """F-R3-P1-5: 403 (forbidden) is also non-retryable auth failure."""
+    """403 (forbidden) is also non-retryable auth failure."""
     from lre.models.openai_api import AuthenticationError
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -212,7 +212,7 @@ def test_openai_client_raises_authentication_error_on_403() -> None:
 
 
 def test_openai_client_reuses_async_client_across_calls() -> None:
-    """F-R2-P2-10: a single OpenAIClient must reuse one httpx.AsyncClient
+    """A single OpenAIClient must reuse one httpx.AsyncClient
     across multiple ``generate`` calls.
     """
     construct_calls = {"n": 0}
@@ -269,7 +269,7 @@ def test_openai_client_works_as_context_manager() -> None:
 
 
 # ---------------------------------------------------------------------------
-# the current implementation (P1-6, P1-20): jitter is seeded; httpx client respects configured
+# Jitter is seeded; httpx client respects configured
 # Limits + Timeout
 # ---------------------------------------------------------------------------
 

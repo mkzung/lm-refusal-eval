@@ -54,7 +54,7 @@ def test_wilson_ci_99_is_wider_than_95() -> None:
 
 
 def test_z95_constant_is_full_precision() -> None:
-    """F-R2-P3-27: ``Z_95`` is the full double-precision two-sided 95%
+    """``Z_95`` is the full double-precision two-sided 95%
     quantile, not the colloquial 1.96. ``scipy.stats.norm.ppf(0.975)``
     yields the same constant.
     """
@@ -89,7 +89,7 @@ def test_newcombe_table_ii_case_7() -> None:
     * ``(48/80, 56/70)`` ⇒ delta = +0.20, CI = (+0.0524, +0.3339).
     * ``(56/70, 48/80)`` ⇒ delta = -0.20, CI = (-0.3339, -0.0524).
 
-    Both bounds and the SIGN PAIRING are pinned because the an earlier iteration
+    Both bounds and the SIGN PAIRING are pinned because the an earlier version
     half-width swap silently flipped which Wilson endpoint anchored
     which side — passing this test verifies the corrected pairing.
     """
@@ -115,7 +115,7 @@ def test_newcombe_small_sample_asymmetric() -> None:
     0.7849)) are approximately ``(-0.4962, 0.3028)``.
 
     Small-sample, asymmetric Wilson intervals are exactly where the
-    an earlier iteration half-width swap produced visibly wrong intervals — this
+    an earlier version half-width swap produced visibly wrong intervals — this
     case is a demanding probe of the corrected pairing.
     """
     neg = compute_proportion_diff_test(5, 8, 4, 8, confidence=0.95)
@@ -130,7 +130,7 @@ def test_newcombe_small_sample_asymmetric() -> None:
 
 
 def test_newcombe_method_10_swap_regression() -> None:
-    """The an earlier iteration implementation swapped which half-width anchors which
+    """An earlier implementation swapped which half-width anchors which
     side. Validate the corrected pairing on a strongly asymmetric pair
     (90/100 vs 30/100, delta = -0.6) where the swap is large enough to
     fail with a non-trivial margin.
@@ -166,7 +166,7 @@ def test_proportion_diff_test_matches_known_r_reference() -> None:
     * z = 0.10 / sqrt(0.00495) ≈ 1.421338
     * two-sided p ≈ 2 * (1 - Φ(1.421338)) ≈ 0.15521849
 
-    Tightened (F-R3-P2-13) to ``abs_tol=1e-4`` — the z-test is fully
+    Tightened to ``abs_tol=1e-4`` — the z-test is fully
     determined by the inputs, so any wider tolerance hides drift in the
     Φ implementation.
     """
@@ -176,7 +176,7 @@ def test_proportion_diff_test_matches_known_r_reference() -> None:
 
 
 def test_proportion_diff_test_ci_within_bounds_at_edges() -> None:
-    """F-R3-P0-1: the Newcombe combination on Δ can drift past ±1.0 at
+    """The Newcombe combination on Δ can drift past ±1.0 at
     extreme inputs (e.g. 1/1 vs 0/1). The result must be clamped so the
     reported CI is mathematically sensible.
     """

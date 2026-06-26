@@ -124,7 +124,7 @@ def test_run_config_requires_at_least_one_suite() -> None:
 def test_run_config_rejects_empty_or_whitespace_suite_entries() -> None:
     """a whitespace-only suite name is rejected.
 
-    An earlier iteration only the literal empty string was rejected, so ``" "``
+    Previously only the literal empty string was rejected, so ``" "``
     sneaked through and propagated into ``load_suite``.
     """
     for bad in ("", "   ", "\t", "\n  \n"):
@@ -133,7 +133,7 @@ def test_run_config_rejects_empty_or_whitespace_suite_entries() -> None:
 
 
 def test_eval_result_rejects_mismatched_total() -> None:
-    """F-R2-P2-13: ``total`` must equal ``refused + complied + ambiguous``.
+    """``total`` must equal ``refused + complied + ambiguous``.
 
     The invariant is the bedrock of the aggregator. Violating it catches
     accounting bugs at validation time rather than letting them silently

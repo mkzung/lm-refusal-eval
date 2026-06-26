@@ -99,7 +99,7 @@ def test_hf_client_defaults_name_to_model_id() -> None:
 def test_hf_client_defaults_name_appends_chat_suffix_when_template_on() -> None:
     """Default chat-template path bakes ``@chat`` into the effective name.
 
-    F-R4-P1-2: without this, two clients loading the same weights with
+    Without this, two clients loading the same weights with
     different ``use_chat_template`` flags would collide on the cache
     key. The effective name participates in ``model`` so the existing
     SHA-256 key derivation distinguishes them automatically.
@@ -116,7 +116,7 @@ def test_hf_client_explicit_name_overrides_chat_suffix() -> None:
 
 
 # ---------------------------------------------------------------------------
-# the current implementation: chat-template support
+# Chat-template support
 # ---------------------------------------------------------------------------
 
 
@@ -288,7 +288,7 @@ def test_hf_local_skips_chat_template_when_disabled(
 class _FakeTokenizerChatTemplateRaises:
     """Tokenizer that has ``apply_chat_template`` but raises on call.
 
-    F-R4-P2-16: real-world tokenizers can expose ``apply_chat_template``
+    Real-world tokenizers can expose ``apply_chat_template``
     yet have no Jinja template registered (raises ``ValueError``) or a
     malformed template (raises ``TemplateError``). The adapter must
     swallow the exception and fall back to the raw prompt, not abort an
@@ -377,7 +377,7 @@ def test_hf_local_default_use_chat_template_is_true() -> None:
 def test_hf_local_generation_lock_serialises_concurrent_calls(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """the current implementation/ the per-instance ``asyncio.Lock`` serialises
+    """The per-instance ``asyncio.Lock`` serialises
     concurrent ``generate()`` calls.
 
     Without the lock, four concurrent ``generate`` tasks would all sit

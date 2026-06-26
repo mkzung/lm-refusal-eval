@@ -173,9 +173,9 @@ def _is_stdout_sentinel(path: Path | str | None) -> bool:
     """Return ``True`` when ``path`` is the Unix-style ``-`` stdout sentinel.
 
     Following the standard CLI convention: ``--out -`` writes to stdout
-    instead of a literal file named ``-``. An earlier iteration the harness created
-    a file named ``-`` in the cwd, which was almost never what the
-    operator intended.
+    instead of a literal file named ``-``. Without this check the harness
+    would create a file named ``-`` in the cwd, which is almost never what
+    the operator intended.
     """
     if path is None:
         return False
@@ -205,14 +205,13 @@ def _safe_response_cache(cache_dir: Path, *, allow_symlinked: bool = False) -> R
     symlink at the cache leaf would silently redirect cache writes
     elsewhere on disk. Pass ``allow_symlinked=True`` to opt in.
 
-     parent-path symlinks now WARN instead of REFUSE. the current implementation
-    compared ``absolute()`` against ``resolve()``, which fired in two
-    common benign cases: (1) any path containing ``..`` segments
-    (``absolute()`` preserves them, ``resolve()`` collapses them) and
-    (2) any path on macOS that traverses ``/tmp`` (which is a system
-    symlink to ``/private/tmp``). The original threat model was a
-    user-controlled leaf symlink — that protection is preserved.
-    Parent symlinks emit a warning so the operator can decide.
+    Parent-path symlinks WARN instead of REFUSE. Comparing ``absolute()``
+    against ``resolve()`` fires in two common benign cases: (1) any path
+    containing ``..`` segments (``absolute()`` preserves them,
+    ``resolve()`` collapses them) and (2) any path on macOS that traverses
+    ``/tmp`` (a system symlink to ``/private/tmp``). The threat model is a
+    user-controlled leaf symlink — that protection is preserved; parent
+    symlinks emit a warning so the operator can decide.
     """
     if not allow_symlinked:
         # Refuse a symlink at the LEAF — that is the user-controlled
@@ -412,13 +411,12 @@ async def _demo_async(
             prompts = list(full_prompts)
         labels = await ajudge_responses(responses)
         suite_label = suite
-        # the current implementation: preserve the ``[sampled N/M, seed=K]`` suffix even when
+        # Preserve the ``[sampled N/M, seed=K]`` suffix even when
         # ``--sample`` overshoots the suite size, adding a ``capped``
         # marker so downstream consumers can tell a sample-was-requested-
-        # but-capped run apart from a true full-suite run. An earlier iteration
-        # dropped the suffix entirely on overshoot — exactly the case
-        # where the user most needs to know their sample request was
-        # truncated.
+        # but-capped run apart from a true full-suite run. Dropping the
+        # suffix on overshoot would hide exactly the case where the user
+        # most needs to know their sample request was truncated.
         if sample_n is not None and sample_n > 0:
             if len(prompts) < len(full_prompts):
                 suite_label = f"{suite}[sampled {len(prompts)}/{len(full_prompts)}, seed={seed}]"
@@ -842,10 +840,10 @@ async def _run_async(
     """
     # ``judge`` came from click.Choice(['rule', 'llm']); narrowing here is safe.
     judge_lit: Literal["rule", "llm"] = judge  # type: ignore[assignment]
-    # the current implementation provenance: bake the run config + judge template fingerprint
+    # Provenance: bake the run config + judge template fingerprint
     # into the snapshot. ``suite_hash`` is populated per-suite below
-    # (different suites within one run get different snapshots).
-    # the current implementation: read the prompt-template hash from the actual judge instance
+    # (different suites within one run get different snapshots). The
+    # prompt-template hash is read from the actual judge instance
     # (subclasses or custom-prompt instances override the default), so a
     # custom judge's hash is correctly reflected in provenance.
     if judge_lit == "llm":
@@ -923,10 +921,10 @@ async def _run_async(
             labels = await ajudge_responses(responses, kind=judge_lit, llm_judge=llm_judge)
             # Tag the suite name on the result with the sample marker so
             # downstream comparisons (``lre compare``) cannot conflate
-            # a sample with a full run. the current implementation: the suffix is also kept
+            # a sample with a full run. The suffix is also kept
             # when ``--sample`` overshoots the suite size (with a
-            # ``capped`` marker) — an earlier iteration dropped it silently
-            # exactly when the operator most needs to know.
+            # ``capped`` marker), which would otherwise be dropped
+            # silently exactly when the operator most needs to know.
             suite_label = suite
             if sample_n is not None and sample_n > 0:
                 if len(prompts) < len(full_prompts):
@@ -954,7 +952,7 @@ async def _run_async(
                     provenance=per_suite_provenance,
                 )
             )
-        return results, all_raw
+    return results, all_raw
 
 
 # ---------------------------------------------------------------------------
@@ -1461,7 +1459,7 @@ def reproduce(results_path: Path, out_path: Path | None, do_exec: bool) -> None:
 
     v1.0 schema is required. Pre-v1.0 results files lack the
     ``adapter`` field and the reproduce command refuses to guess —
-    re-run with the current implementation to capture the full provenance.
+    re-run with the current release to capture the full provenance.
     """
     try:
         results = from_json(results_path.read_text(encoding="utf-8"))
@@ -1477,11 +1475,11 @@ def reproduce(results_path: Path, out_path: Path | None, do_exec: bool) -> None:
     def _bare_suite(suite_label: str) -> str:
         return suite_label.split("[", 1)[0]
 
-    # Group rows by every CLI input that drives the eval. An earlier iteration
-    # grouped by 4-tuple (seed, model_id, temperature, max_tokens) which
-    # silently collapsed runs that differed only in judge / adapter /
-    # sample_n. the current implementation includes the full set so two runs only collapse
-    # when they were genuinely launched with the same flags.
+    # Group rows by every CLI input that drives the eval. Grouping by a
+    # 4-tuple (seed, model_id, temperature, max_tokens) would silently
+    # collapse runs that differed only in judge / adapter / sample_n;
+    # the full set means two runs only collapse when they were genuinely
+    # launched with the same flags.
     GroupKey = tuple[
         int,  # seed
         str | None,  # model_id
@@ -1504,7 +1502,7 @@ def reproduce(results_path: Path, out_path: Path | None, do_exec: bool) -> None:
                 f"row for model={row.model!r} suite={row.suite!r} has no provenance; "
                 "cannot reproduce (re-run with the current release to capture provenance)."
             )
-        # the current implementation requires ``adapter`` to rebuild the right client. Pre-v1.0
+        # Reproduce requires ``adapter`` to rebuild the right client. Pre-v1.0
         # results files (schema 0.7/0.8/0.9) have ``adapter=None``.
         if prov.adapter is None:
             raise click.UsageError(
@@ -1630,7 +1628,7 @@ def reproduce(results_path: Path, out_path: Path | None, do_exec: bool) -> None:
         # deterministic"; real adapters re-issue real work and require
         # the operator to have set the relevant env vars.
         #
-        # the current implementation: For the HF adapter, ``Provenance.model_id`` is set to
+        # For the HF adapter, ``Provenance.model_id`` is set to
         # ``client.name`` which carries a ``@chat`` suffix when
         # ``use_chat_template=True``. The raw HF Hub repo id (the
         # value passed to ``HFLocalClient(model_id=...)``) is the part
@@ -2032,7 +2030,7 @@ def cache_info(cache_dir: Path) -> None:
         return
     if not is_lre_cache_dir(cache_dir):
         # Surface a softer message when the directory exists but lacks
-        # the sentinel — it might be a an earlier iteration cache the user should
+        # the sentinel — it might be a legacy cache the user should
         # migrate, not a stray directory. Point at ``cache migrate``.
         msg = (
             f"Refusing to inspect {cache_dir}: missing or invalid "
@@ -2145,7 +2143,7 @@ def cache_clear(cache_dir: Path, older_than: str | None, dry_run: bool) -> None:
     ),
 )
 def cache_migrate(cache_dir: Path, purge_stale: bool) -> None:
-    """Write the ``.lre-cache`` sentinel on a an earlier iteration cache directory.
+    """Write the ``.lre-cache`` sentinel on a legacy cache directory.
 
     Idempotent: running ``cache migrate`` against an already-migrated
     cache is a no-op (the sentinel is left in place and the file count

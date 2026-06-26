@@ -173,7 +173,7 @@ def test_aggregate_paired_results_length_mismatch_raises() -> None:
 
 
 def test_paired_aggregator_excludes_error_sentinels_from_denominator() -> None:
-    """F-R4-P1-1: error sentinels must not register as 'inner complied'.
+    """Error sentinels must not register as 'inner complied'.
 
     Constructs a batch of 5 responses where 2 are runner error sentinels
     (``generation_seconds == -1``). With the old aggregator, those rows
@@ -325,7 +325,7 @@ def test_cli_did_subcommand_end_to_end_json(tmp_path: Path) -> None:
 def test_cli_did_default_format_is_markdown(tmp_path: Path) -> None:
     """``lre did`` with no --format flag prints a Markdown table to stdout.
 
-    F-R4-P2-13: the default output is human-readable Markdown so a
+    The default output is human-readable Markdown so a
     researcher can eyeball the joint refusal rate without piping
     through ``jq``.
     """
@@ -359,7 +359,7 @@ def test_cli_did_default_format_is_markdown(tmp_path: Path) -> None:
 
 
 def test_cli_did_warns_when_inner_equals_outer(tmp_path: Path) -> None:
-    """F-R4-P2-12: identical inner/outer judges trigger a stderr warning."""
+    """Identical inner/outer judges trigger a stderr warning."""
     raw_path = tmp_path / "raw.jsonl"
     rr = RawResponse(
         prompt_id="p1",
@@ -461,11 +461,11 @@ def test_cli_did_help_mentions_far_ai_research() -> None:
 
 
 def test_paired_label_responses_fans_out_concurrently() -> None:
-    """the current implementation/ pinned timing on paired-defense fan-out.
+    """Pinned timing on paired-defense fan-out.
 
     Eight responses, each judge call sleeps 100ms — with
     ``max_concurrent=4`` the total wall time must be well under 400ms.
-    The an earlier iteration serial implementation took ~1.6s (8 * 2 judges * 100ms).
+    An earlier serial implementation took ~1.6s (8 * 2 judges * 100ms).
     Generous tolerance to absorb CI noise.
     """
     import time as _time

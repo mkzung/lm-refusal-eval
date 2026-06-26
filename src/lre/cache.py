@@ -10,8 +10,8 @@ Design
   "temperature", "max_tokens", "extras"}))`` — the canonical JSON is
   built with ``json.dumps(..., sort_keys=True, ensure_ascii=False)`` so
   no separator character (``|``, ``\\n``, etc.) can be smuggled inside
-  a field to silently collide two distinct inputs. The previous the current implementation
-  format ``f"{model}|{prompt}|..."`` was ambiguous: ``model='a|b' +
+  a field to silently collide two distinct inputs. The previous
+  pipe-joined format ``f"{model}|{prompt}|..."`` was ambiguous: ``model='a|b' +
   prompt='c'`` and ``model='a' + prompt='b|c'`` produced the same key.
   Canonical JSON closes that hole. ``extras`` is a tuple of arbitrary
   additional discriminators provided by the caller (see
@@ -90,8 +90,8 @@ def _cache_key(
     not silently share a cache entry. The list-valued ``extras`` field
     is omitted when empty so the legacy empty-tuple default still
     produces a stable key (its hash differs from the legacy pipe-joined
-    digest — caches written by the current implementation will be re-populated on the next
-    run, which is the intended migration).
+    digest, so caches written by the old format are re-populated on the
+    next run, which is the intended migration).
     """
     payload: dict[str, object] = {
         "model": model,
@@ -119,11 +119,11 @@ def is_lre_cache_dir(cache_dir: Path) -> bool:
     :class:`ResponseCache` before running ``cache clear`` / ``cache
     info`` on it — protects against ``--dir ~/Documents`` accidents.
 
-     the sentinel content is also validated. An earlier iteration
-    only the file's presence was checked, so any 0-byte ``.lre-cache``
-    file would pass — including a touched-by-hand sentinel created
-    BEFORE the cache wrote any real data. Now the sentinel must parse
-    as JSON with the expected ``purpose`` and ``schema_version`` keys.
+    The sentinel content is validated, not just its presence: checking
+    presence alone would let any 0-byte ``.lre-cache`` file pass —
+    including a touched-by-hand sentinel created BEFORE the cache wrote
+    any real data. The sentinel must parse as JSON with the expected
+    ``purpose`` and ``schema_version`` keys.
     """
     sentinel = Path(cache_dir) / SENTINEL_FILENAME
     if not sentinel.is_file():

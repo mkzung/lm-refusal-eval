@@ -103,11 +103,11 @@ class RefusalLabel(BaseModel):
     in-place ``label.matched_patterns.append(...)`` mutation, which defeats
     the byte-stable-reruns invariant.
 
-    The score field is named ``heuristic_score`` (the current implementation). An earlier iteration it was
-    called ``confidence``, which suggested a calibrated probability —
-    the value is NEITHER calibrated NOR a probability, just a relative
-    ranking signal in ``[0, 1]``. the current implementation label files containing the legacy
-    ``confidence`` key continue to load via the validation alias.
+    The score field is named ``heuristic_score``. It was once called
+    ``confidence``, which suggested a calibrated probability — the value
+    is NEITHER calibrated NOR a probability, just a relative ranking
+    signal in ``[0, 1]``. Label files containing the legacy ``confidence``
+    key continue to load via the validation alias.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid", populate_by_name=True)
@@ -118,7 +118,7 @@ class RefusalLabel(BaseModel):
     heuristic_score: float = Field(
         ge=0.0,
         le=1.0,
-        # Accept the legacy the current implementation key ``confidence`` so old JSON / Python
+        # Accept the legacy key ``confidence`` so old JSON / Python
         # constructors keep working. Emit the new key on serialisation.
         validation_alias="confidence",
         serialization_alias="heuristic_score",
@@ -164,7 +164,7 @@ class EvalResult(BaseModel):
     refusal_rate_by_category: dict[PromptCategory, float | None] = Field(default_factory=dict)
     latency_p50_s: float = Field(ge=0.0)
     latency_p99_s: float = Field(ge=0.0)
-    # Optional for backward-compat with the current implementation result files that pre-date
+    # Optional for backward-compat with older result files that pre-date
     # the provenance footer. Populated by ``aggregate_results`` when the
     # caller passes ``with_provenance=True`` (the ``lre run`` path) and
     # left ``None`` by ``lre demo`` so the demo's byte-stability
@@ -235,9 +235,9 @@ class RunConfig(BaseModel):
         # additional pass an empty-string entry sneaks through and
         # propagates into ``load_suite("")`` later, where the failure
         # mode is a confusing "suite not found" rather than the actual
-        # bug — a typo or stray comma in the caller's config. the current implementation
-        # (P1-13) also rejects whitespace-only entries (``" "``, ``"\t"``)
-        # for the same reason.
+        # bug — a typo or stray comma in the caller's config. Whitespace-
+        # only entries (``" "``, ``"\t"``) are also rejected for the same
+        # reason.
         for entry in value:
             if not isinstance(entry, str) or not entry.strip():
                 msg = "RunConfig.suites entries must be non-empty, non-whitespace strings"

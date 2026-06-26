@@ -192,7 +192,7 @@ def test_legacy_v04_result_json_loads_without_provenance() -> None:
 def test_schema_version_is_1_0_string() -> None:
     """External tooling dispatches on schema_version — pin the value.
 
-    the current implementation bumps the schema to ``"1.0"`` alongside the full CLI-input
+    the implementation bumps the schema to ``"1.0"`` alongside the full CLI-input
     capture (adapter, fake_refusal_rate, sample_n, judge_kind,
     use_chat_template, api_key_env, base_url, max_concurrent). The
     bump signals that the harness contract is now stable.
@@ -214,7 +214,7 @@ def test_provenance_v08_new_fields_default_to_none() -> None:
 
 
 def test_provenance_v08_accepts_explicit_fields() -> None:
-    """When provided, the current implementation fields round-trip into the snapshot."""
+    """When provided, the implementation fields round-trip into the snapshot."""
     prov = collect_provenance(
         seed=1,
         model_id="Qwen2-0.5B-Instruct@chat",
@@ -233,7 +233,7 @@ def test_provenance_v08_accepts_explicit_fields() -> None:
 def test_provenance_v07_json_loads_unchanged() -> None:
     """A legacy provenance JSON (no new fields) must still parse.
 
-    Backward compat: external tooling holding the current implementation result files must
+    Backward compat: external tooling holding the implementation result files must
     not break when upgrading the harness.
     """
     legacy = {
@@ -329,7 +329,7 @@ def test_provenance_ignores_malformed_source_date_epoch(monkeypatch) -> None:  #
 
 
 def test_provenance_ignores_negative_source_date_epoch(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    """the current implementation: a negative SOURCE_DATE_EPOCH falls back to wall-clock; never raises.
+    """A negative SOURCE_DATE_EPOCH falls back to wall-clock; never raises.
 
     Pre-1970 timestamps crash on Windows ``fromtimestamp`` and are never
     what the operator intended. The helper warns and falls through.

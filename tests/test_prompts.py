@@ -78,7 +78,7 @@ def test_schema_violation_raises(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ],
 )
 def test_load_suite_rejects_path_traversal_segments(bad_name: str) -> None:
-    """the current implementation: ``load_suite`` refuses path-traversal / separator segments.
+    """``load_suite`` refuses path-traversal / separator segments.
 
     Without this defence, ``lre run --suite ../etc/passwd`` would
     escape the bundled data dir on the first ``base / f"{suite}.jsonl"``

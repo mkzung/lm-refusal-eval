@@ -80,10 +80,9 @@ class AnthropicClient:
         self._http_lock = asyncio.Lock()
         # decorrelated-exponential-backoff jitter must be
         # seeded so two ``generate()`` calls with the same seed produce
-        # the same jitter sequence. An earlier iteration the calls used
-        # ``random.uniform`` against the module-level shared RNG, which
-        # silently broke the byte-identity claim for runs that ever hit
-        # the retry path.
+        # the same jitter sequence. Using ``random.uniform`` against the
+        # module-level shared RNG would silently break the byte-identity
+        # claim for runs that ever hit the retry path.
         self._jitter_rng = random.Random(jitter_seed)
 
     async def _get_http(self) -> httpx.AsyncClient:

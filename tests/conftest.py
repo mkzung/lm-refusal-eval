@@ -1,4 +1,4 @@
-"""Shared pytest fixtures (F-R3-P2-11 / NEW-R3-4).
+"""Shared pytest fixtures.
 
 The httpx-mocking helpers in the adapter test modules previously rolled
 their own ``try/finally`` block to restore ``httpx.AsyncClient`` after a
@@ -91,7 +91,7 @@ def fake_judge_factory() -> Callable[..., Any]:
 
     The returned class declares ``kind='custom'`` and emits a
     :class:`RefusalLabel` with the requested ``refused`` verdict. Used
-    by F-R3-P2-10 to confirm ``ajudge_responses`` accepts arbitrary
+    to confirm ``ajudge_responses`` accepts arbitrary
     custom judges via the structural protocol.
     """
 

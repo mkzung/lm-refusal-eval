@@ -124,10 +124,9 @@ def compute_proportion_diff_test(
       → ``delta = p_b - p_a = 0.50 - 0.625 = -0.125``;
       95% CI on delta ≈ ``(-0.4962, 0.3028)``.
 
-    An earlier iteration the docstring rendered each case as a shorthand
-    ``A_num/A_den vs B_num/B_den`` that was easy to read in the
-    natural-language direction but invertible from the actual
-    ``refused_a / total_a / refused_b / total_b`` argument order.
+    The cases above are written in ``refused_a / total_a / refused_b /
+    total_b`` argument order to match the function signature, rather than
+    a natural-language ``A vs B`` shorthand that is easy to invert.
 
     Parameters
     ----------
@@ -167,9 +166,9 @@ def compute_proportion_diff_test(
     # A is ``p2``), the lower bound subtracts the distance from p_b down
     # to low_b and from p_a up to high_a; the upper bound adds the
     # distance from p_b up to high_b and from p_a down to low_a. The
-    # an earlier iteration implementation paired these half-widths incorrectly,
-    # producing intervals that did not contain delta on highly
-    # asymmetric inputs (validated below against Newcombe Table II).
+    # Pairing the half-widths the other way round produces intervals
+    # that do not contain delta on highly asymmetric inputs; this
+    # ordering is validated below against Newcombe Table II.
     low_a, high_a = compute_wilson_ci(refused_a, total_a, confidence=confidence)
     low_b, high_b = compute_wilson_ci(refused_b, total_b, confidence=confidence)
     ci_low = delta - math.sqrt((p_b - low_b) ** 2 + (high_a - p_a) ** 2)
