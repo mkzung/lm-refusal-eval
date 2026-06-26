@@ -215,7 +215,13 @@ def _strip_quoted_blocks(text: str) -> str:
     # quote check, every meta-explanation would now be misclassified as
     # a refusal.
     stripped_text = text.lstrip()
-    starts_with_quote = stripped_text.startswith(('"', "“", "`"))
+    # A leading fenced code block (```) is a code display, not the model's
+    # own quoted refusal, so it must not count as a leading quote — without
+    # this, a refusal stripped from inside the fence would be resurrected
+    # here and a compliant answer after the fence misread as a refusal.
+    starts_with_quote = stripped_text.startswith(('"', "“")) or (
+        stripped_text.startswith("`") and not stripped_text.startswith("```")
+    )
     if starts_with_quote:
         original_match_count = sum(1 for _, pat in _COMPILED if pat.search(text))
         if original_match_count > 0:
