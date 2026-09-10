@@ -10,7 +10,7 @@
 
 A small, well-tested harness for measuring how often a language model refuses adversarial prompts. Plug in a model (HF, OpenAI, Anthropic, or a deterministic synthetic adapter), run a fixed prompt suite, get JSON output that re-runs byte-identically given the same seed and `SOURCE_DATE_EPOCH`.
 
-The motivating use case is the adversarial-robustness scaling-laws line of work — Howe, McKenzie, Hollinsworth, Zajac, Tseng, Tucker, Bacon, Gleave, *"Scaling Trends in Language Model Robustness"*, arXiv:2407.18213v5 (ICML 2025). Studies of that shape need a refusal harness that is (a) trivially extensible across model families and (b) reproducible enough that a number reported in a paper can be re-derived months later from the same prompt suite and the same seed.
+The motivating use case is the adversarial-robustness scaling-laws line of work, Howe, McKenzie, Hollinsworth, Zajac, Tseng, Tucker, Bacon, Gleave, *"Scaling Trends in Language Model Robustness"*, arXiv:2407.18213v5 (ICML 2025). Studies of that shape need a refusal harness that is (a) trivially extensible across model families and (b) reproducible enough that a number reported in a paper can be re-derived months later from the same prompt suite and the same seed.
 
 ## Quick start
 
@@ -19,7 +19,7 @@ pip install -e ".[dev]"
 lre demo --sample 5
 ```
 
-`lre demo` exercises every code path — runner, judge, aggregator, scaling-table renderer — against the deterministic `FakeModelClient`, with no network or GPU required. CI runs the same flow on every commit.
+`lre demo` exercises every code path (runner, judge, aggregator, scaling-table renderer) against the deterministic `FakeModelClient`, with no network or GPU required. CI runs the same flow on every commit.
 
 For a real model:
 
@@ -52,9 +52,9 @@ Two reproducible runs on the `harmful_helpful` suite, generated locally on an Ap
 
 Both runs:
 
-- Are deterministic — re-running with the same seed, `SOURCE_DATE_EPOCH`, and code-tree produces byte-identical JSON.
+- Are deterministic, re-running with the same seed, `SOURCE_DATE_EPOCH`, and code-tree produces byte-identical JSON.
 - Show **zero over-refusal** on the helpful subset (the rule judge fires only on adversarial prompts that the model actually refused).
-- Show **monotonic refusal scaling with model size** on the harmful subset — the qualitative trend reported by Howe et al. (FAR.AI scaling-laws) on a 2-point N=7 slice.
+- Show **monotonic refusal scaling with model size** on the harmful subset, the qualitative trend reported by Howe et al. (FAR.AI scaling-laws) on a 2-point N=7 slice.
 
 Reproduce:
 
@@ -72,7 +72,7 @@ The result file's `provenance.git_sha`, `provenance.suite_hash`, and `provenance
 
 ## Judge validation
 
-The rule judge is documented as **precision-biased** — false negatives are more common than false positives. `examples/data/validation_set.jsonl` is a hand-labeled set of 30 prompt-response pairs spanning the easy and adversarial surface (clear refusals, clear compliance, refusal-in-quote, mid-text refusal, `"I will not lie"` false-positive bait, prompt-level verdict-shaped phrases). Run:
+The rule judge is documented as **precision-biased**, false negatives are more common than false positives. `examples/data/validation_set.jsonl` is a hand-labeled set of 30 prompt-response pairs spanning the easy and adversarial surface (clear refusals, clear compliance, refusal-in-quote, mid-text refusal, `"I will not lie"` false-positive bait, prompt-level verdict-shaped phrases). Run:
 
 ```bash
 python examples/validate_judge.py
@@ -83,9 +83,9 @@ Current measurement:
 | Metric | Value |
 |---|---|
 | Accuracy | 0.900 (27/30) |
-| Cohen's κ | 0.783 — substantial agreement (Landis & Koch 1977) |
-| False positives | 0/18 — judge is precision-biased as advertised |
-| False negatives | 3/12 — refusals using phrasings outside the trigger set |
+| Cohen's κ | 0.783, substantial agreement (Landis & Koch 1977) |
+| False positives | 0/18, judge is precision-biased as advertised |
+| False negatives | 3/12, refusals using phrasings outside the trigger set |
 
 `tests/test_validation_set.py` pins κ ≥ 0.70 in CI, so any judge regression that hurts agreement fails the build.
 
@@ -94,10 +94,10 @@ Current measurement:
 For each `(model, suite)` pair, `lre run` produces:
 
 - **Per-prompt refusal labels** (rule judge or LLM judge) with the matched pattern(s) for auditability.
-- **Aggregate refusal rate** with a 95% **Wilson score** confidence interval — at N=10..15 the half-width on a 0.5 rate is roughly ±0.25, so headline rates without bounds are misleading.
+- **Aggregate refusal rate** with a 95% **Wilson score** confidence interval: at N=10..15 the half-width on a 0.5 rate is roughly ±0.25, so headline rates without bounds are misleading.
 - **Per-category breakdown** (harmful / helpful / borderline) so over-refusal and under-refusal surface separately.
 - **Paired-defense (defense-in-depth) joint refusal rate** for two-judge layered pipelines, with a corrected **Newcombe Method-10** confidence interval on the Δ rate vs. a single judge.
-- **Provenance block** — `schema_version`, `lre_version`, Python version, platform, hashed hostname, git SHA + dirty flag, seed, ISO-8601 UTC timestamp, and the full set of CLI inputs needed by `lre reproduce` to rebuild the original invocation byte-for-byte.
+- **Provenance block**: `schema_version`, `lre_version`, Python version, platform, hashed hostname, git SHA + dirty flag, seed, ISO-8601 UTC timestamp, and the full set of CLI inputs needed by `lre reproduce` to rebuild the original invocation byte-for-byte.
 
 ## Reproducibility
 
@@ -114,7 +114,7 @@ For each `(model, suite)` pair, `lre run` produces:
 
 ## Limitations
 
-- The rule judge is precision-biased by design — see the validation set above. For high-recall evaluation, use `--judge llm` with a paired defense-in-depth setup.
+- The rule judge is precision-biased by design, see the validation set above. For high-recall evaluation, use `--judge llm` with a paired defense-in-depth setup.
 - Refusal-rate measurements are sensitive to prompt-suite framing. A model that scores low on one suite may score high on another; cross-suite comparisons require the same suite hash. The Provenance block records `suite_hash` for exactly this reason.
 - Local HF generation on small models (≤7B) is deterministic at temperature 0 with `set_seed`; larger models and 4-bit/8-bit quantisation introduce non-determinism that the harness does not paper over.
 
